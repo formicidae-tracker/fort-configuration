@@ -1,0 +1,14 @@
+---
+## This playbook deploys the whole application stack of the FORmicidae Tracker
+
+# Apply common configuration to all hosts
+- hosts: all
+  roles:
+#  - common
+
+# Olympus is the public gateway of FORT
+- import_playbook: olympus.yml
+# Letos are the tracking node of FORT
+- import_playbook: leto.yml
+# Zeuses are the climate control node of FORT
+- import_playbook: zeus.yml

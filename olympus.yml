@@ -1,0 +1,10 @@
+---
+## This playbook deplooys the olympus (public gateway) of the FORmicidae Tracker
+
+- hosts: olympus
+  roles:
+  # - dhcp-server
+  # - ntp-server
+  # - gateway
+  # - olympus
+  # - streamserver

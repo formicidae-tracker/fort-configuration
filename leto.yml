@@ -1,0 +1,8 @@
+---
+
+## This playbook deploys the leto (tracking software) stack of the FORmicidae Tracker
+
+- hosts: leto
+  roles:
+  - vncserver
+  - leto
