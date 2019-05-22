@@ -3,5 +3,5 @@
 
 - hosts: zeus
   roles:
-  - slcan-daemon
-  - zeus-application
+#  - slcan-daemon
+#  - zeus

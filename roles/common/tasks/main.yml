@@ -1,0 +1,13 @@
+ - name: Ensures avahi-daemon
+   apt:
+     name: avahi-daemon
+     state: latest
+
+ - name: Install common utilities
+   apt:
+     name: "{{ packages }}"
+   vars:
+     packages:
+     - tmux
+     - emacs
+     - vim

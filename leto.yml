@@ -4,5 +4,5 @@
 
 - hosts: leto
   roles:
-  - vncserver
-  - leto
+#  - vncserver
+#  - leto
