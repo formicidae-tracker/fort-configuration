@@ -1,0 +1,16 @@
+[Unit]
+Description=Olympus: Displays al Lot of gods
+After=syslog.target
+After=network.target
+
+[Service]
+RestartSec=2s
+WorkingDirectory=/home/olympus/olympus
+ExecStart=/home/olympus/olympus/olympus
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=olympus
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

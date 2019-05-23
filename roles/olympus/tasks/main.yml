@@ -1,0 +1,50 @@
+---
+- name: adds backports
+  apt_repository:
+    repo: deb http://deb.debian.org/debian {{ ansible_distribution_release }}-backports main
+    state: present
+    filename: backports
+    update_cache: yes
+
+- name: installs node
+  apt:
+    name: ['npm', 'git']
+    default_release: stretch-backports
+    state: present
+
+- name: installs yarn and angular cli
+  npm:
+    name: "{{ item }}"
+    state: present
+    global: yes
+  with_items:
+    - yarn
+    - ng-cli
+
+- name: creates system user olympus
+  user:
+    name: olympus
+    system: yes
+    home: /home/olympus
+    state: present
+
+- name: downloads olympus sources
+  git:
+    repo: 'https://github.com/formicidae-tracker/olympus.git'
+    dest: /home/olympus/olympus
+    force: yes
+  notify: builds olympus
+
+- name: installs rsyslog handler
+  template:
+    src: syslog.conf.j2
+    dest: /etc/rsyslog.d/olympus.conf
+  notify: restarts rsyslog
+
+- name: installs olympus service
+  template:
+    src: olympus.service.j2
+    dest: /etc/systemd/system/olympus.service
+  notify:
+    - enables olympus service
+    - restarts olympus service

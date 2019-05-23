@@ -5,4 +5,4 @@
     - ntp-server
     - golang
     - streamserver
-  # - olympus
+    - olympus
