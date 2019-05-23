@@ -57,12 +57,15 @@
     state: present
 
 - name: creates missing directories
-  shell: |
-    mkdir -p /usr/local/nginx/conf/sites-enabled/
-    mkdir -p /usr/local/nginx/conf/sites-available/
-    mkdir -p /usr/local/nginx/conf/conf.d
-    mkdir -p /var/log/nginx
-    chown www-data:www-data /var/log/nginx
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: www-data
+  with_items:
+    - /usr/local/nginx/conf/sites-enabled/
+    - /usr/local/nginx/conf/sites-available/
+    - /usr/local/nginx/conf/conf.d
+    - /var/log/nginx
 
 - name: sets nginx configuration
   template:
