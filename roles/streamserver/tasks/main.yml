@@ -48,15 +48,34 @@
     make install
   when: nginx_with_rtmp.stdout == "needed"
 
+- name: adds www-data user
+  user:
+    system: yes
+    name: www-data
+    home: /var/www
+    create_home: yes
+    state: present
+
+- name: creates missing directories
+  shell: |
+    mkdir -p /usr/local/nginx/conf/sites-enabled/
+    mkdir -p /usr/local/nginx/conf/sites-available/
+    mkdir -p /usr/local/nginx/conf/conf.d
+    mkdir -p /var/log/nginx
+    chown www-data:www-data /var/log/nginx
+
+- name: sets nginx configuration
+  template:
+    src: nginx.conf.j2
+    dest: /usr/local/nginx/conf/nginx.conf
+
 - name: installs systemd service for nginx
   template:
     src: nginx.service.j2
     dest: /etc/systemd/system/nginx-rtmp.service
-  notify: starts nginx-rtmp
+  notify: enables nginx service
 
-
-
-
-# - name: sets nginx stream server
-#   command: true
-#   notify: reloads nginx configuration
+- name: starts nginx service
+  systemd:
+    name: nginx-rtmp
+    state: started
