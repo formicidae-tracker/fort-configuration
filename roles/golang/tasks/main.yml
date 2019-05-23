@@ -1,0 +1,28 @@
+- name: tests go version
+  shell: |
+    if [ -x /usr/local/go/bin/go ]
+    then
+    	/usr/local/go/bin/go version
+    fi
+  args:
+    executable: /bin/bash
+  register: go_actual_version
+
+- name: removes previous go
+  command: rm -Rf /usr/local/go || true
+  when: go_actual_version.stdout.find(golang_version) == -1
+
+- name: downloads correct golang version
+  get_url:
+    url: https://dl.google.com/go/go{{golang_version}}.linux-amd64.tar.gz
+    dest: /tmp/go{{golang_version}}.linux-amd64.tar.gz
+  when: go_actual_version.stdout.find(golang_version) == -1
+
+- name: unpacks golang binaries to
+  command: tar -C /usr/local -xzf /tmp/go{{golang_version}}.linux-amd64.tar.gz
+  when: go_actual_version.stdout.find(golang_version) == -1
+
+- name: Makes golang available to all users
+  template:
+    src: 99-golang.sh
+    dest: /etc/profile.d/99-golang.sh

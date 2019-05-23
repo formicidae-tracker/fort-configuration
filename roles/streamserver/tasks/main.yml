@@ -1,0 +1,56 @@
+---
+- name: removes distribution nginx
+  apt:
+    name: nginx
+    state: absent
+
+
+- name: test nginx installation
+  shell: |
+    if [ -x /usr/local/nginx/sbin/nginx ]
+    then
+    	/usr/local/nginx/sbin/nginx -V 2>&1 | grep nginx-rtmp-module 1>/dev/null || echo "needed"
+    else
+    	echo "needed"
+    fi
+  register: nginx_with_rtmp
+- debug:
+    var: nginx_with_rtmp
+
+- name: install nginx dependencies
+  apt:
+    name : ['build-essential','libpcre3-dev','libssl-dev','zlib1g-dev']
+    update_cache: true
+    state: present
+  when: nginx_with_rtmp.stdout == "needed"
+
+- name: downloads nginx sources
+  get_url:
+    url: https://nginx.org/download/nginx-{{nginx_version}}.tar.gz
+    dest: /tmp/nginx.tar.gz
+  when: nginx_with_rtmp.stdout == "needed"
+
+- name: downloads nginx-rtmnp-module sources
+  get_url:
+    url: https://github.com/arut/nginx-rtmp-module/archive/v{{nginx_rtmp_version}}.tar.gz
+    dest: /tmp/nginx-rtmp-module.tar.gz
+  when: nginx_with_rtmp.stdout == "needed"
+
+- name: installs nginx with rtmp support
+  shell: |
+    cd /tmp
+    tar xzf nginx.tar.gz
+    tar xzf nginx-rtmp-module.tar.gz
+    mv nginx-rtmp-module-{{nginx_rtmp_version}} nginx-rtmp-module
+    cd nginx-{{nginx_version}}
+    ./configure --with-http_ssl_module --add-module=../nginx-rtmp-module
+    make
+    make install
+  when: nginx_with_rtmp.stdout == "needed"
+
+# - name: installs systemd service for nginx
+#   command: true
+
+# - name: sets nginx stream server
+#   command: true
+#   notify: reloads nginx configuration
