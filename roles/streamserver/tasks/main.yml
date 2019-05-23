@@ -48,8 +48,14 @@
     make install
   when: nginx_with_rtmp.stdout == "needed"
 
-# - name: installs systemd service for nginx
-#   command: true
+- name: installs systemd service for nginx
+  template:
+    src: nginx.service.j2
+    dest: /etc/systemd/system/nginx-rtmp.service
+  notify: starts nginx-rtmp
+
+
+
 
 # - name: sets nginx stream server
 #   command: true
