@@ -3,7 +3,6 @@ worker_processes  auto;
 
 pid   /var/run/nginx.pid;
 
-
 events {
     worker_connections  1024;
 }
@@ -61,6 +60,7 @@ http {
 	##
 	include /usr/local/nginx/conf/conf.d/*.conf;
 	include /usr/local/nginx/sites-enabled/*;
+
 }
 
 

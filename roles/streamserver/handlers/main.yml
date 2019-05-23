@@ -5,3 +5,8 @@
     enabled: yes
     name: nginx-rtmp
     daemon_reload: yes
+
+- name: reloads nginx-rtmp
+  systemd:
+    state: restarted
+    name: nginx-rtmp

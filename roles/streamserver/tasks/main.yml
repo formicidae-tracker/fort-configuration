@@ -79,3 +79,16 @@
   systemd:
     name: nginx-rtmp
     state: started
+
+- name: sends default server configuration
+  template:
+    src: default.j2
+    dest: /usr/local/nginx/conf/sites-available/default
+  notify: reloads nginx-rtmp
+
+- name: enables default server
+  file:
+    src: /usr/local/nginx/conf/sites-available/default
+    dest: /usr/local/nginx/conf/sites-enabled/default
+    state: link
+  notify: reloads nginx-rtmp
