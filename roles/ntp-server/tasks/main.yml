@@ -1,0 +1,15 @@
+---
+
+ - name : updates ntpd package
+   apt:
+    name: ntp
+    state: present
+
+ - name : updates dhcp configuration
+   template:
+     src: dhcpd.conf.j2
+     dest: /etc/dhcp/dhcpd.conf
+     owner: root
+     group: root
+     mode: '0644'
+   notify: restarts dhcpd

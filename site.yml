@@ -4,8 +4,7 @@
 # Apply common configuration to all hosts
 - hosts: all
   roles:
-  - common
-
+    - common
 # Olympus is the public gateway of FORT
 - import_playbook: olympus.yml
 # Letos are the tracking node of FORT

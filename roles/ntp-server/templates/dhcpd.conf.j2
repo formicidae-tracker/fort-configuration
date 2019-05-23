@@ -1,0 +1,15 @@
+option domain-name "lan";
+option domain-name-servers {{ansible_facts['dns']['nameservers'] | join(', ')}};
+
+default-lease-time 86400;
+max-lease-time 172800;
+
+ddns-update-style none;
+
+authoritative;
+
+subnet {{ fort_subnet }} netmask 255.255.255.0 {
+    range {{ fort_subnet | ipmath(50) }} {{ fort_subnet | ipmath(200) }};
+    option routers {{ fort_subnet | ipmath(1) }};
+    option ntp-servers {{ fort_subnet | ipmath(1) }};
+}
