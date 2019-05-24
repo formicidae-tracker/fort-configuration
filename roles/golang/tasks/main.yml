@@ -1,28 +1,39 @@
-- name: tests go version
-  shell: |
-    if [ -x /usr/local/go/bin/go ]
-    then
-    	/usr/local/go/bin/go version
-    fi
-  args:
-    executable: /bin/bash
-  register: go_actual_version
+- name: installs desired go version
+  block:
+  - name: removes previous go
+    file:
+      name: /usr/local/go
+      state: absent
 
-- name: removes previous go
-  command: rm -Rf /usr/local/go || true
-  when: go_actual_version.stdout.find(golang_version) == -1
+  - name: downloads correct golang version
+    get_url:
+      url: https://dl.google.com/go/go{{golang_version}}.linux-amd64.tar.gz
+      dest: /tmp/go{{golang_version}}.linux-amd64.tar.gz
+    delegate_to: 127.0.0.1
+    run_once: true
 
-- name: downloads correct golang version
-  get_url:
-    url: https://dl.google.com/go/go{{golang_version}}.linux-amd64.tar.gz
-    dest: /tmp/go{{golang_version}}.linux-amd64.tar.gz
-  when: go_actual_version.stdout.find(golang_version) == -1
+  - name: unpacks golang binaries to
+    unarchive:
+      src: /tmp/go{{golang_version}}.linux-amd64.tar.gz
+      dest: /usr/local
 
-- name: unpacks golang binaries to
-  command: tar -C /usr/local -xzf /tmp/go{{golang_version}}.linux-amd64.tar.gz
-  when: go_actual_version.stdout.find(golang_version) == -1
+  - name: makes golang available to all users
+    template:
+      src: 99-golang.sh
+      dest: /etc/profile.d/99-golang.sh
 
-- name: Makes golang available to all users
-  template:
-    src: 99-golang.sh
-    dest: /etc/profile.d/99-golang.sh
+  - name: insures custom facts directory exists
+    file:
+      name: /etc/ansible/facts.d
+      state: directory
+      mode: '0755'
+
+  - name: installs golang version fact
+    copy:
+      src: golang-version.fact
+      dest: /etc/ansible/facts.d/fort-0001-golang-version.fact
+      mode: '0755'
+      owner: root
+      group: root
+
+  when:  ansible_local['fort-0001-golang-version'] is not defined or ansible_local['fort-0001-golang-version']['golang_version'] != golang_version

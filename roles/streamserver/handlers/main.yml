@@ -6,7 +6,7 @@
     name: nginx-rtmp
     daemon_reload: yes
 
-- name: reloads nginx-rtmp
+- name: restarts nginx-rtmp
   systemd:
     state: restarted
     name: nginx-rtmp

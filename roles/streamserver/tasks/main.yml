@@ -4,94 +4,119 @@
     name: nginx
     state: absent
 
+- name: installs nginx with rtmp module
+  block:
+  - name: install nginx dependencies
+    apt:
+      name : ['build-essential','libpcre3-dev','libssl-dev','zlib1g-dev']
+      update_cache: true
+      state: present
 
-- name: test nginx installation
-  shell: |
-    if [ -x /usr/local/nginx/sbin/nginx ]
-    then
-    	/usr/local/nginx/sbin/nginx -V 2>&1 | grep nginx-rtmp-module 1>/dev/null || echo "needed"
-    else
-    	echo "needed"
-    fi
-  register: nginx_with_rtmp
-- debug:
-    var: nginx_with_rtmp
+  - name: cleans previous nginx installation
+    file:
+      name: /usr/local/nginx
+      state: absent
 
-- name: install nginx dependencies
-  apt:
-    name : ['build-essential','libpcre3-dev','libssl-dev','zlib1g-dev']
-    update_cache: true
-    state: present
-  when: nginx_with_rtmp.stdout == "needed"
+  - name: downloads nginx sources
+    get_url:
+      url: https://nginx.org/download/nginx-{{nginx_version}}.tar.gz
+      dest: /tmp/nginx-{{nginx_version}}.tar.gz
+    delegate_to: 127.0.0.1
+    run_once: true
 
-- name: downloads nginx sources
-  get_url:
-    url: https://nginx.org/download/nginx-{{nginx_version}}.tar.gz
-    dest: /tmp/nginx.tar.gz
-  when: nginx_with_rtmp.stdout == "needed"
+  - name: downloads nginx-rtmnp-module sources
+    get_url:
+      url: https://github.com/arut/nginx-rtmp-module/archive/v{{nginx_rtmp_version}}.tar.gz
+      dest: /tmp/nginx-rtmp-module-{{nginx_rtmp_version}}.tar.gz
+    delegate_to: 127.0.0.1
+    run_once: true
 
-- name: downloads nginx-rtmnp-module sources
-  get_url:
-    url: https://github.com/arut/nginx-rtmp-module/archive/v{{nginx_rtmp_version}}.tar.gz
-    dest: /tmp/nginx-rtmp-module.tar.gz
-  when: nginx_with_rtmp.stdout == "needed"
+  - name: extracts nginx sources
+    unarchive:
+      src: /tmp/nginx-{{nginx_version}}.tar.gz
+      dest: /tmp
 
-- name: installs nginx with rtmp support
-  shell: |
-    cd /tmp
-    tar xzf nginx.tar.gz
-    tar xzf nginx-rtmp-module.tar.gz
-    mv nginx-rtmp-module-{{nginx_rtmp_version}} nginx-rtmp-module
-    cd nginx-{{nginx_version}}
-    ./configure --with-http_ssl_module --add-module=../nginx-rtmp-module
-    make
-    make install
-  when: nginx_with_rtmp.stdout == "needed"
+  - name: extracts nginx-rtmp sources
+    unarchive:
+      src: /tmp/nginx-rtmp-module-{{nginx_rtmp_version}}.tar.gz
+      dest: /tmp
 
-- name: adds www-data user
-  user:
-    system: yes
-    name: www-data
-    home: /var/www
-    create_home: yes
-    state: present
+  - name: builds and installs nginx
+    shell: |
+      cd /tmp
+      cd nginx-{{nginx_version}}
+      ./configure --with-http_ssl_module --add-module=../nginx-rtmp-module-{{nginx_rtmp_version}}
+      make
+      make install
 
-- name: creates missing directories
-  file:
-    path: "{{ item }}"
-    state: directory
-    owner: www-data
-  with_items:
-    - /usr/local/nginx/conf/sites-enabled/
-    - /usr/local/nginx/conf/sites-available/
-    - /usr/local/nginx/conf/conf.d
-    - /var/log/nginx
+  - name: adds www-data user
+    user:
+      system: yes
+      name: www-data
+      home: /var/www
+      create_home: yes
+      state: present
 
-- name: sets nginx configuration
+  - name: creates missing directories
+    file:
+      path: "{{ item }}"
+      state: directory
+      owner: www-data
+    with_items:
+      - /usr/local/nginx/conf/sites-enabled/
+      - /usr/local/nginx/conf/sites-available/
+      - /usr/local/nginx/conf/conf.d
+      - /var/log/nginx
+
+  - name: sets nginx configuration
+    template:
+      src: nginx.conf.j2
+      dest: /usr/local/nginx/conf/nginx.conf
+
+  - name: installs systemd service for nginx
+    template:
+      src: nginx.service.j2
+      dest: /etc/systemd/system/nginx-rtmp.service
+      notify: enables nginx service
+
+  - name: starts nginx service
+    systemd:
+      name: nginx-rtmp
+      state: started
+
+  - name: sets default server configuration
+    template:
+      src: default.j2
+      dest: /usr/local/nginx/conf/sites-available/default
+    notify: restarts nginx-rtmp
+
+  - name: enables default server
+    file:
+      src: /usr/local/nginx/conf/sites-available/default
+      dest: /usr/local/nginx/conf/sites-enabled/default
+      state: link
+    notify: restarts nginx-rtmp
+
+  - name: ensures custom fact directory is present
+    file:
+      name: /etc/ansible/facts.d
+      state: directory
+      owner: root
+      group: root
+      mode: '0755'
+
+  - name: installs custom fact
+    copy:
+      src: fort-0002-nginx-rtmp-version.fact
+      dest: /etc/ansible/facts.d/fort-0002-nginx-rtmp-version.fact
+      owner: root
+      group: root
+      mode: '0755'
+
+  when:  ansible_local['fort-0002-nginx-rtmp-version'] is not defined or ansible_local['fort-0002-nginx-rtmp-version']['nginx-version'] != nginx_version or ansible_local['fort-0002-nginx-rtmp-version']['nginx-rtmp-version'] != nginx_rtmp_version
+
+- name: Sets nginx configuration
   template:
     src: nginx.conf.j2
     dest: /usr/local/nginx/conf/nginx.conf
-
-- name: installs systemd service for nginx
-  template:
-    src: nginx.service.j2
-    dest: /etc/systemd/system/nginx-rtmp.service
-  notify: enables nginx service
-
-- name: starts nginx service
-  systemd:
-    name: nginx-rtmp
-    state: started
-
-- name: sends default server configuration
-  template:
-    src: default.j2
-    dest: /usr/local/nginx/conf/sites-available/default
-  notify: reloads nginx-rtmp
-
-- name: enables default server
-  file:
-    src: /usr/local/nginx/conf/sites-available/default
-    dest: /usr/local/nginx/conf/sites-enabled/default
-    state: link
-  notify: reloads nginx-rtmp
+  notify: restarts nginx-rtmp

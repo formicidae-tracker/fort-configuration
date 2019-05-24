@@ -1,0 +1,15 @@
+#!/bin/bash
+
+NGINX_EXE=/usr/local/nginx/sbin/nginx
+
+if [ -x $NGINX_EXE ]
+then
+	INFOS=$($NGINX_EXE -V 2>&1)
+	NGINX_VERSION=$(echo $INFOS | grep -Eo 'nginx/([0-9]+\.)+[0-9]+' | sed 's/nginx\///' )
+	NGINX_RTMP_VERSION=$(echo $INFOS | grep -Eo 'nginx-rtmp-module-([0-9]+\.)+[0-9]+' | sed 's/nginx-rtmp-module-//' )
+else
+	NGINX_VERSION='0.0.0'
+	NGINX_RTMP_VERSION='0.0.0'
+fi
+
+echo "{\"nginx-version\":\"$NGINX_VERSION\",\"nginx-rtmp-version\":\"$NGINX_RTMP_VERSION\"}"
