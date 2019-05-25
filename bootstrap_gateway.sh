@@ -137,7 +137,7 @@ iface $wan_interface inet dhcp
 allow-hotplug $lan_interface
 auto $lan_interface
 iface $lan_interface inet static
-	address 10.41.42.1
+	address 192.168.42.1
 	netmask 255.255.255.0
 " > /etc/network/interfaces
 
@@ -150,7 +150,8 @@ echo 1 > /proc/sys/net/ipv4/ip_forward
 sudo apt install -y iptables-persistent isc-dhcp-server
 
 iptables --table nat --append POSTROUTING --out-interface $wan_interface -j MASQUERADE
-iptables --append FORWARD --in-interface $lan_interface -j ACCEPT
+iptables --append FORWARD --in-interface $lan_interface --out-interface $wan_interface -j ACCEPT
+iptables --append FORWARD --in-interface $wan_interface --out-interface $lan_interface -m state --state RELATED,ESTABLISHED -j ACCEPT
 
 iptables-save > /etc/iptables/rules.v4
 
@@ -175,9 +176,9 @@ ddns-update-style none;
 authoritative;
 
 
-subnet 10.41.42.0 netmask 255.255.255.0 {
-    range 10.41.42.100 10.41.42.200;
-    option routers 10.41.42.1;
+subnet 192.168.42.0 netmask 255.255.255.0 {
+    range 192.168.42.100 192.168.42.200;
+    option routers 192.168.42.1;
 }
 " > /etc/dhcp/dhcpd.conf
 
