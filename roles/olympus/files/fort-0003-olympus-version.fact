@@ -1,0 +1,13 @@
+#!/bin/bash
+
+OLYMPUS_DIR=/home/olympus/olympus
+
+if [ -d $OLYMPUS_DIR/.git ]
+then
+	cd $OLYMPUS_DIR
+	OLYMPUS_VERSION=$(git describe --tags 2>/dev/null)
+else
+	OLYMPUS_VERSION=""
+fi
+
+echo "{\"olympus-version\":\"$OLYMPUS_VERSION\"}"

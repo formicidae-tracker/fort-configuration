@@ -1,12 +1,4 @@
 ---
-- name: builds olympus
-  shell: |
-    cd /home/olympus/olympus
-    /usr/local/go/bin/go build
-    cd webapp
-    yarn install
-    yarn build
-
 - name: restarts rsyslog
   systemd:
     name: rsyslog

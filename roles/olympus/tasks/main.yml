@@ -1,39 +1,67 @@
 ---
-- name: adds backports
-  apt_repository:
-    repo: deb http://deb.debian.org/debian {{ ansible_distribution_release }}-backports main
-    state: present
-    filename: backports
-    update_cache: yes
 
-- name: installs node
-  apt:
-    name: ['npm', 'git']
-    default_release: stretch-backports
-    state: present
+- name: installs olympus
+  block:
+  - name: adds backports
+    apt_repository:
+      repo: deb http://deb.debian.org/debian {{ ansible_distribution_release }}-backports main
+      state: present
+      filename: backports
+      update_cache: yes
 
-- name: installs yarn and angular cli
-  npm:
-    name: "{{ item }}"
-    state: present
-    global: yes
-  with_items:
-    - yarn
-    - ng-cli
+  - name: installs node
+    apt:
+      name: ['npm', 'git']
+      default_release: stretch-backports
+      state: present
 
-- name: creates system user olympus
-  user:
-    name: olympus
-    system: yes
-    home: /home/olympus
-    state: present
+  - name: installs yarn and angular cli
+    npm:
+      name: "{{ item }}"
+      state: present
+      global: yes
+    with_items:
+      - yarn
+      - ng-cli
 
-- name: downloads olympus sources
-  git:
-    repo: 'https://github.com/formicidae-tracker/olympus.git'
-    dest: /home/olympus/olympus
-    force: yes
-  notify: builds olympus
+  - name: creates system user olympus
+    user:
+      name: olympus
+      system: yes
+      home: /home/olympus
+      state: present
+
+  - name: downloads olympus sources
+    git:
+      repo: 'https://github.com/formicidae-tracker/olympus.git'
+      dest: /home/olympus/olympus
+      force: yes
+      version: "{{olympus_version}}"
+
+  - name: builds olympus
+    shell: |
+      cd /home/olympus/olympus
+      /usr/local/go/bin/go build
+      cd webapp
+      yarn install
+      yarn build
+
+  - name: ensures custom directory facts is present
+    file:
+      name: /etc/ansible/facts.d
+      state: directory
+      owner: root
+      group: root
+      mode: '0755'
+
+  - name: installs custom fact
+    copy:
+      src: fort-0003-olympus-version.fact
+      dest: /etc/ansible/facts.d/fort-0003-olympus-version.fact
+      mode: '0755'
+
+
+  when:  ansible_local['fort-0003-olympus-version'] is not defined or ansible_local['fort-0003-olympus-version']['olympus-version'] != olympus_version
 
 - name: installs rsyslog handler
   template:
