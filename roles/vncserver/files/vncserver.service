@@ -1,0 +1,12 @@
+[Unit]
+Description=VNC Server
+After=multi-user.target network.target
+
+[Service]
+Restart=always
+# Replace this with x0vncserver from TigerVNC in Ubuntu 18.04.
+# Set password by running `sudo x11vnc -storepasswd [PASSWORD] /etc/x11vnc.passwd`
+ExecStart=/usr/bin/x11vnc -display :0 -forever -loop -noxdamage -repeat -shared
+
+[Install]
+WantedBy=default.target
