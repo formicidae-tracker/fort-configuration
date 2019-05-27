@@ -7,4 +7,4 @@
     - local-ntp
     - vncserver
     - euresys-framegrabber
-#  - leto
+    - leto

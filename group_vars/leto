@@ -4,3 +4,6 @@
 euresys_memento_version: 10.6.0.50
 euresys_coaxlink_version: 10.6.1.74
 euresys_arch: x86_64
+artemis_version: 0.1.1~dev1-1
+hermes_version: 0.1.2-1
+apriltag_version: 3.0.0-1

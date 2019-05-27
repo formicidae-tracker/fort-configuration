@@ -8,14 +8,14 @@
 
     - name: installs backports-snapshot
       apt_repository:
-        repo: deb http://snapshot.debian.org/archive/debian/20180425T160425Z {{ ansible_distribution_release }}-backports main
+        repo: deb http://snapshot.debian.org/archive/debian/20190501T084202Z {{ ansible_distribution_release }}-backports main
         state: present
         filename: backports
         update_cache: yes
 
     - name: installs target kernel
       apt:
-        name: ['linux-image-4.15.0-0.bpo.2-amd64','linux-headers-4.15.0-0.bpo.2-amd64']
+        name: ['linux-image-4.19.0-0.bpo.4-amd64','linux-headers-4.19.0-0.bpo.4-amd64']
         state: present
         default_release: stretch-backports
       notify: reboots machine
