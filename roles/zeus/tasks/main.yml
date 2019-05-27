@@ -4,7 +4,7 @@
   block:
   - name: ensures make is installed
     apt:
-      name: build-essential
+      name: [ 'build-essential', 'git' ]
       state: present
 
   - name: downloads zeus sources

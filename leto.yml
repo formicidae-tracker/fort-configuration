@@ -6,4 +6,5 @@
   roles:
     - local-ntp
     - vncserver
+    - euresys-framegrabber
 #  - leto

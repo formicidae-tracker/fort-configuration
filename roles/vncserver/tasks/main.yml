@@ -1,7 +1,7 @@
 ---
 - name: adds default user
   shell: |
-    if [ id -u name ]
+    if id -u fort-user > /dev/null
     then
     	exit 0
     fi

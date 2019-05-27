@@ -1,4 +1,8 @@
 ---
+- name: installs can-utils
+  apt:
+    name: can-utils
+    state: present
 
 - name: installs serial-slcand@ttyS0
   copy:
