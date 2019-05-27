@@ -1,1 +1,12 @@
 ---
+
+- name: installs serial-slcand@ttyS0
+  copy:
+    src: serial-slcand@ttyS0.service
+    dest: /etc/systemd/system/serial-slcand@ttyS0.service
+
+- name : enables serial-slcand@ttyS0
+  systemd:
+    name: serial-slcand@ttyS0
+    enabled: yes
+    state: started

@@ -4,5 +4,5 @@
 - hosts: zeus
   roles:
     - local-ntp
-#  - slcan-daemon
-#  - zeus
+    - slcand
+    - zeus
