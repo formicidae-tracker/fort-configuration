@@ -1,3 +1,11 @@
+- name: installs golang version fact
+  copy:
+    src: golang-version.fact
+    dest: /etc/ansible/facts.d/fort-0001-golang-version.fact
+    mode: '0755'
+    owner: root
+    group: root
+
 - name: installs desired go version
   block:
   - name: removes previous go
@@ -21,19 +29,5 @@
     template:
       src: 99-golang.sh
       dest: /etc/profile.d/99-golang.sh
-
-  - name: insures custom facts directory exists
-    file:
-      name: /etc/ansible/facts.d
-      state: directory
-      mode: '0755'
-
-  - name: installs golang version fact
-    copy:
-      src: golang-version.fact
-      dest: /etc/ansible/facts.d/fort-0001-golang-version.fact
-      mode: '0755'
-      owner: root
-      group: root
 
   when:  ansible_local['fort-0001-golang-version'] is not defined or ansible_local['fort-0001-golang-version']['golang_version'] != golang_version

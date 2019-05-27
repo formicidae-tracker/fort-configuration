@@ -1,0 +1,8 @@
+---
+- name: ensures custom facts dir is present
+  file:
+    name: /etc/ansible/facts.d
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'

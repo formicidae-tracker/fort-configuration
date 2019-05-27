@@ -4,6 +4,14 @@
     name: nginx
     state: absent
 
+- name: installs custom fact
+  copy:
+    src: fort-0002-nginx-rtmp-version.fact
+    dest: /etc/ansible/facts.d/fort-0002-nginx-rtmp-version.fact
+    owner: root
+    group: root
+    mode: '0755'
+
 - name: installs nginx with rtmp module
   block:
   - name: install nginx dependencies
@@ -96,22 +104,6 @@
       dest: /usr/local/nginx/conf/sites-enabled/default
       state: link
     notify: restarts nginx-rtmp
-
-  - name: ensures custom fact directory is present
-    file:
-      name: /etc/ansible/facts.d
-      state: directory
-      owner: root
-      group: root
-      mode: '0755'
-
-  - name: installs custom fact
-    copy:
-      src: fort-0002-nginx-rtmp-version.fact
-      dest: /etc/ansible/facts.d/fort-0002-nginx-rtmp-version.fact
-      owner: root
-      group: root
-      mode: '0755'
 
   when:  ansible_local['fort-0002-nginx-rtmp-version'] is not defined or ansible_local['fort-0002-nginx-rtmp-version']['nginx-version'] != nginx_version or ansible_local['fort-0002-nginx-rtmp-version']['nginx-rtmp-version'] != nginx_rtmp_version
 

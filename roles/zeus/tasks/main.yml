@@ -1,4 +1,9 @@
 ---
+- name: installs custom fact
+  copy:
+    src: fort-0004-zeus-version.fact
+    dest: /etc/ansible/facts.d/fort-0004-zeus-version.fact
+    mode: '0755'
 
 - name: installs zeus and utilities
   block:
@@ -20,19 +25,5 @@
       export PATH=$PATH:/usr/local/go/bin
       make
       make install
-
-  - name: ensures custom directory facts is present
-    file:
-      name: /etc/ansible/facts.d
-      state: directory
-      owner: root
-      group: root
-      mode: '0755'
-
-  - name: installs custom fact
-    copy:
-      src: fort-0004-zeus-version.fact
-      dest: /etc/ansible/facts.d/fort-0004-zeus-version.fact
-      mode: '0755'
 
   when:  ansible_local['fort-0004-zeus-version'] is not defined or ansible_local['fort-0004-zeus-version']['zeus-version'] != zeus_version

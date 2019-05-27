@@ -1,4 +1,10 @@
 ---
+- name: installs custom fact
+  copy:
+    src: fort-0003-olympus-version.fact
+    dest: /etc/ansible/facts.d/fort-0003-olympus-version.fact
+    mode: '0755'
+
 
 - name: installs olympus
   block:
@@ -46,19 +52,6 @@
       yarn install
       yarn build
 
-  - name: ensures custom directory facts is present
-    file:
-      name: /etc/ansible/facts.d
-      state: directory
-      owner: root
-      group: root
-      mode: '0755'
-
-  - name: installs custom fact
-    copy:
-      src: fort-0003-olympus-version.fact
-      dest: /etc/ansible/facts.d/fort-0003-olympus-version.fact
-      mode: '0755'
 
 
   when:  ansible_local['fort-0003-olympus-version'] is not defined or ansible_local['fort-0003-olympus-version']['olympus-version'] != olympus_version

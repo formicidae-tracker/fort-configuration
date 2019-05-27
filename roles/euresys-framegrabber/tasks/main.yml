@@ -1,9 +1,4 @@
 ---
-- name: ensures custom facts
-  file:
-    name: /etc/ansible/facts.d
-    state: directory
-
 - name: installs custom fact
   copy:
     src: fort-0005-euresys-version.fact
