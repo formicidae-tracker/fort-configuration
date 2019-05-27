@@ -1,5 +1,5 @@
 ---
-- name: restarts ntpd daemon
+- name: restarts systemd-timesyncd service
   service:
-    name: ntp
+    name: systemd-timesyncd
     state: restarted
