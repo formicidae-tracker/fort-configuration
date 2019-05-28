@@ -7,3 +7,4 @@ euresys_arch: x86_64
 artemis_version: 0.1.1~dev1-1
 hermes_version: 0.1.2-1
 apriltag_version: 3.0.0-1
+leto_version: v0.1.0-dev1

@@ -1,0 +1,14 @@
+#!/bin/bash
+
+
+LETO_DIR=/usr/local/src/leto
+
+if [ -d $LETO_DIR/.git ]
+then
+	cd $LETO_DIR
+	LETO_VERSION=$(git describe --tags 2>/dev/null)
+else
+	LETO_VERSION=""
+fi
+
+echo "{\"leto-version\":\"$LETO_VERSION\"}"

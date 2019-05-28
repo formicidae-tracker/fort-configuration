@@ -1,8 +1,7 @@
 - name: installs required packages
   apt:
-    name: ['libprotobuf-dev' ]
+    name: ['libprotobuf-dev', 'git', 'git-lfs' ]
     default_release: stretch-backports
-
 
 - name: ensures destination dir
   file:
@@ -32,3 +31,26 @@
     - libfort-hermes0.1_{{hermes_version}}_amd64.deb
     - libfort-hermes-dev_{{hermes_version}}_amd64.deb
     - artemis_{{artemis_version}}_amd64.deb
+
+- name: installs custom facts
+  copy:
+    src: fort-0006-leto-version.fact
+    dest: /etc/ansible/facts.d/fort-0006-leto-version.fact
+    mode: '0755'
+
+- name: installs leto from sources
+  block:
+    - name: download leto sources
+      git:
+        name: https://github.com/formicidae-tracker/leto.git
+        dest: /usr/local/src/leto
+        version: "{{ leto_version }}"
+        force: yes
+
+    - name: installs leto
+      shell: |
+        cd /usr/local/src/leto/leto
+        /usr/local/go/bin/go build
+        install leto /usr/local/bin
+
+  when: ansible_local['fort-0006-leto-version'] is not defined or ansible_local['fort-0006-leto-version']['leto-version'] != leto_version

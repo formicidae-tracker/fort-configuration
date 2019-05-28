@@ -1,3 +1,4 @@
 ---
 dependencies:
   - role: custom-facts
+  - role: golang

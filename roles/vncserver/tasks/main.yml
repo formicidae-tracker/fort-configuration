@@ -42,4 +42,8 @@
     owner: fort-user
     group: fort-user
     mode: '0644'
-  notify: reboots machine
+  register: service_installed
+
+- name: reboots machine
+  reboot:
+  when: service_installed is defined and service_installed.changed == True
