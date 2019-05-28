@@ -1,42 +1,75 @@
-- name: installs required packages
-  apt:
-    name: ['libprotobuf-dev', 'git', 'git-lfs' ]
-    default_release: stretch-backports
-
-- name: ensures destination dir
-  file:
-    name: /usr/local/fort/debs/
-    state: directory
-
-- name: copying debian packages
-  copy:
-    src: "{{item}}"
-    dest: "/usr/local/fort/debs/{{item}}"
-  with_items:
-    - libapriltag3_{{apriltag_version}}_amd64.deb
-    - libapriltag-dev_{{apriltag_version}}_amd64.deb
-    - libfort-hermes-cpp0.1_{{hermes_version}}_amd64.deb
-    - libfort-hermes-cpp-dev_{{hermes_version}}_amd64.deb
-    - libfort-hermes0.1_{{hermes_version}}_amd64.deb
-    - libfort-hermes-dev_{{hermes_version}}_amd64.deb
-    - artemis_{{artemis_version}}_amd64.deb
-
-- name: install packages
-  command: "dpkg -i /usr/local/fort/debs/{{item}}"
-  with_items:
-    - libapriltag3_{{apriltag_version}}_amd64.deb
-    - libapriltag-dev_{{apriltag_version}}_amd64.deb
-    - libfort-hermes-cpp0.1_{{hermes_version}}_amd64.deb
-    - libfort-hermes-cpp-dev_{{hermes_version}}_amd64.deb
-    - libfort-hermes0.1_{{hermes_version}}_amd64.deb
-    - libfort-hermes-dev_{{hermes_version}}_amd64.deb
-    - artemis_{{artemis_version}}_amd64.deb
-
+---
 - name: installs custom facts
   copy:
     src: fort-0006-leto-version.fact
     dest: /etc/ansible/facts.d/fort-0006-leto-version.fact
     mode: '0755'
+
+- name: installs required packages
+  apt:
+    name: ['libprotobuf-dev', 'git', 'git-lfs', 'cmake', 'protobuf-compiler', 'libgoogle-glog-dev', 'libopencv-dev', 'libopencv-imgproc-dev', 'libopencv-highgui-dev', 'libasio-dev', 'libboost-dev', 'libeigen3-dev', 'google-mock' ]
+    default_release: stretch-backports
+
+- name: installs apriltag
+  block:
+  - name: downloads source
+    git:
+      name: https://github.com/AprilRobotics/apriltag.git
+      dest: /usr/local/src/apriltag
+      version: "{{apriltag_version}}"
+      force: yes
+
+  - name: installs apriltags
+    shell: |
+      cd /usr/local/src/apriltag
+      mkdir -p build
+      sed -i 's/0\.10\.0/3.0.0/' apriltag.pc.in
+      cd build
+      cmake ../ -DCMAKE_BUILD_TYPE=Release
+      make
+      make install
+
+  when: ansible_local['fort-0006-leto-version'] is not defined or ansible_local['fort-0006-leto-version']['apriltag-version'] != apriltag_version
+
+- name: installs hermes
+  block:
+  - name: downloads sources
+    git:
+      name: https://github.com/formicidae-tracker/hermes.git
+      dest: /usr/local/src/hermes
+      version: "{{hermes_version}}"
+      force: yes
+
+  - name: installs hermes
+    shell: |
+      cd /usr/local/src/hermes
+      mkdir -p build
+      cd build
+      cmake ../ -DCMAKE_BUILD_TYPE=Release
+      make
+      make install
+
+  when: ansible_local['fort-0006-leto-version'] is not defined or ansible_local['fort-0006-leto-version']['hermes-version'] != hermes_version
+
+- name: installs artemis
+  block:
+  - name: downloads sources
+    git:
+      name: https://github.com/formicidae-tracker/artemis.git
+      dest: /usr/local/src/artemis
+      version: "{{artemis_version}}"
+      force: yes
+
+  - name: compiles artemis
+    shell: |
+      cd /usr/local/src/artemis
+      mkdir -p build
+      cd build
+      cmake ../ -DCMAKE_BUILD_TYPE=Release
+      make
+      make install
+
+  when: ansible_local['fort-0006-leto-version'] is not defined or ansible_local['fort-0006-leto-version']['artemis-version'] != artemis_version
 
 - name: installs leto from sources
   block:

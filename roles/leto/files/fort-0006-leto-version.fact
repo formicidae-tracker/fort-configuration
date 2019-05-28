@@ -1,14 +1,21 @@
 #!/bin/bash
 
 
-LETO_DIR=/usr/local/src/leto
+PACKAGES="leto apriltag hermes artemis"
 
-if [ -d $LETO_DIR/.git ]
-then
-	cd $LETO_DIR
-	LETO_VERSION=$(git describe --tags 2>/dev/null)
-else
-	LETO_VERSION=""
-fi
+delim="{"
 
-echo "{\"leto-version\":\"$LETO_VERSION\"}"
+for p in $PACKAGES
+do
+	DIR=/usr/local/src/$p
+	echo -n "$delim\"$p-version\":\""
+	if [ -d $DIR/.git ]
+	then
+		cd $DIR
+		echo -n $(git describe --tags 2>/dev/null)
+	fi
+	echo -n "\""
+	delim=", "
+done
+
+echo "}"
