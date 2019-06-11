@@ -5,27 +5,30 @@
     dest: /etc/ansible/facts.d/fort-0006-leto-version.fact
     mode: '0755'
 
+- name: adds protobuf ppa
+  apt_repository:
+    repo: ppa:maarten-fonville/protobuf
+
 - name: installs required packages
   apt:
-    name: ['libprotobuf-dev', 'git', 'git-lfs', 'cmake', 'protobuf-compiler', 'libgoogle-glog-dev', 'libopencv-dev', 'libopencv-imgproc-dev', 'libopencv-highgui-dev', 'libasio-dev', 'libboost-dev', 'libeigen3-dev', 'google-mock' ]
-    default_release: stretch-backports
+    name: ['libprotobuf-dev', 'git', 'git-lfs', 'cmake', 'protobuf-compiler', 'libgoogle-glog-dev', 'libopencv-dev', 'libopencv-imgproc-dev', 'libopencv-highgui-dev', 'libasio-dev', 'libboost-dev', 'libeigen3-dev', 'google-mock', 'ffmpeg' ]
 
 - name: installs apriltag
   block:
-  - name: downloads source
+  - name: downloads apriltag source
     git:
       name: https://github.com/AprilRobotics/apriltag.git
       dest: /usr/local/src/apriltag
-      version: "{{apriltag_version}}"
+      version: "{{ apriltag_version }}"
       force: yes
 
   - name: installs apriltags
     shell: |
       cd /usr/local/src/apriltag
-      mkdir -p build
       sed -i 's/0\.10\.0/3.0.0/' apriltag.pc.in
+      mkdir build
       cd build
-      cmake ../ -DCMAKE_BUILD_TYPE=Release
+      cmake -DCMAKE_BUILD_TYPE=Release ../
       make
       make install
 
@@ -33,7 +36,7 @@
 
 - name: installs hermes
   block:
-  - name: downloads sources
+  - name: downloads hermes sources
     git:
       name: https://github.com/formicidae-tracker/hermes.git
       dest: /usr/local/src/hermes
@@ -53,7 +56,7 @@
 
 - name: installs artemis
   block:
-  - name: downloads sources
+  - name: downloads artemis sources
     git:
       name: https://github.com/formicidae-tracker/artemis.git
       dest: /usr/local/src/artemis
@@ -85,5 +88,37 @@
         cd /usr/local/src/leto/leto
         /usr/local/go/bin/go build
         install leto /usr/local/bin
+      notify: restarts leto service
+
 
   when: ansible_local['fort-0006-leto-version'] is not defined or ansible_local['fort-0006-leto-version']['leto-version'] != leto_version
+
+- name: adds leto user
+  user:
+    name: leto
+    system: yes
+    home: /var/lib/leto
+    create_home: yes
+    state: present
+
+- name: ensures data dir is existing
+  file:
+    name: "{{leto_data_dir}}"
+    state: directory
+    mode: '0755'
+    owner: leto
+    group: leto
+
+- name: installs rsyslog handler
+  template:
+    src: syslog.conf.j2
+    dest: /etc/rsyslog.d/leto.conf
+  notify: restarts rsyslog
+
+- name: installs leto service
+  template:
+    src: leto.service.j2
+    dest: /etc/systemd/system/leto.service
+  notify:
+    - enables leto service
+    - restarts leto service

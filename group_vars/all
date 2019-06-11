@@ -2,3 +2,4 @@
 
 fort_subnet: 192.168.42.0
 golang_version: 1.12.5
+debian_mirror: ftp.ch.debian.org

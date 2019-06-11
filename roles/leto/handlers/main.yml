@@ -1,0 +1,16 @@
+---
+- name: restarts rsyslog
+  systemd:
+    name: rsyslog
+    state: restarted
+
+- name: enables leto service
+  systemd:
+    name: leto
+    enabled: yes
+    daemon_reload: yes
+
+- name: restarts leto service
+  systemd:
+    name: leto
+    state: restarted

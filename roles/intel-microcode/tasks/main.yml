@@ -1,0 +1,10 @@
+---
+- name: updates intel-microcode
+  apt:
+    name: intel-microcode
+    state: latest
+  register: microcode_updated
+
+- name: reboots computer
+  reboot:
+  when: microcode_updated is defined and microcode_updated.changed == True

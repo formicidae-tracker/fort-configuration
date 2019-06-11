@@ -11,7 +11,7 @@
 - name: sets user as default logged in user
   copy:
     src: daemon.conf
-    dest: /etc/gdm3/daemon.conf
+    dest: /etc/gdm3/custom.conf
 
 - name: installs vncserver
   apt:
