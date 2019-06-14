@@ -19,7 +19,7 @@
 
   - name: ensures build-essential packages
     apt:
-      name: [ 'build-essential','apt-file']
+      name: [ 'build-essential','apt-file','libgconf2-4']
       state: present
 
   - name: extracts sources
