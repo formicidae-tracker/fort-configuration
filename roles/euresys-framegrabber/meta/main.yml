@@ -1,5 +1,4 @@
 ---
 dependencies:
   # needed as we can only install drivers for one kernel (no DKMS)
-  - role: targeted-kernel
   - role: custom-facts

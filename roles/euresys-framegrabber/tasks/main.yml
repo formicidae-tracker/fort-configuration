@@ -37,4 +37,32 @@
       cd /usr/local/src/euresys/coaxlink-linux-{{euresys_arch}}-{{euresys_coaxlink_version}}
       ./install.sh
 
+  - name: sets dkms modules path
+    file:
+      src: "/usr/local/src/{{ item.src }}"
+      dest: "/usr/src/{{ item.dest }}"
+    with_items:
+      - { src:"memento-linux-{{euresys_arch}}-{{euresys_memento_version}}" dest:"memento-{{euresys_memento_version}}"}
+      - { src:"coaxlink-linux-{{euresys_arch}}-{{euresys_coaxlink_version}}" dest:"coaxlink-{{euresys_coaxlink_version}}"}
+
+  - name: sets dkms configuration
+    templates:
+      src: {{item.name}}.dkms.conf.j2
+      dest: /usr/src/{{item.name}}-{{item.version}}/dkms.conf
+    with_items:
+      - { name:"memento" version:"{{ euresys_memento_version }}" }
+      - { name:"coaxlink" version:"{{ euresys_coaxlink_version }}" }
+
+  - name: installs dkms package
+    shell: |
+      cd /usr/src/{{item.name}}-{{item.version}}
+      dkms add -m {{item.name}} -v {{item.version}}
+      dkms build -m {{item.name}} -v {{item.version}}
+      dkms install -m {{item.name}} -v {{item.version}}
+    with_items:
+      - { name:"memento" version:"{{ euresys_memento_version }}" }
+      - { name:"coaxlink" version:"{{ euresys_coaxlink_version }}" }
+
+
+
   when: ansible_local['fort-0005-euresys-version'] is not defined or ansible_local['fort-0005-euresys-version']['memento-version'] != euresys_memento_version or ansible_local['fort-0005-euresys-version']['coaxlink-version'] != euresys_coaxlink_version
