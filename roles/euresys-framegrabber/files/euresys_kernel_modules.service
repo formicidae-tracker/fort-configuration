@@ -1,0 +1,8 @@
+[Unit]
+After=ssh.service
+
+[Service]
+ExecStart=/bin/bash /usr/local/bin/install_euresys_modules.sh
+
+[Install]
+WantedBy=default.target

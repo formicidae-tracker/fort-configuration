@@ -2,8 +2,9 @@
 
 ## This playbook deploys the leto (tracking software) stack of the FORmicidae Tracker
 
-- hosts: leto
+- hosts: vision_masters,vision_slaves
   roles:
     - local-ntp
     - vncserver
     - leto
+#    - euresys-firmware

@@ -1,0 +1,11 @@
+---
+- name: installs euresys kernel modules service
+  systemd:
+    name: euresys_kernel_modules
+    enabled: yes
+    daemon_reload: yes
+
+- name: restarts euresys kernel modules service
+  systemd:
+    name: euresys_kernel_modules
+    state: restarted
