@@ -7,4 +7,4 @@
     - local-ntp
     - vncserver
     - leto
-#    - euresys-firmware
+    - coaxlink-firmware

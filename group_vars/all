@@ -6,10 +6,10 @@ debian_mirror: ftp.ch.debian.org
 zeus_version: v0.1.0-dev2
 euresys_memento_version: 10.6.0.50
 euresys_coaxlink_version: 10.6.1.74
-euresys_firmware_version: 273
 euresys_arch: x86_64
 artemis_version: v0.1.4
 hermes_version: v0.1.8
 apriltag_version: v3.0.0
 leto_version: v0.1.4
 leto_data_dir: /data/leto
+coaxlink_firmware_version: 273

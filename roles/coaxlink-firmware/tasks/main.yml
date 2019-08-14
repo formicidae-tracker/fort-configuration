@@ -1,0 +1,22 @@
+---
+- name: installs custom facts
+  copy:
+    src: fort-0007-coaxlink-firmware.fact
+    dest: /etc/ansible/facts.d/fort-0007-coaxlink-firmware.fact
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: updates firmware if needed
+  block:
+  - name: upload firmware
+    shell: |
+      coaxlink-firmware install {{coaxlink_firmware_variant}} --card=0
+
+  - name: reboot machine
+    shell: |
+      echo 0 > /sys/class/rtc/rtc0/wakealarm
+      echo `date '+%s' -d '+4 minutes'` > /sys/class/rtc/rtc0/wakealarm
+      shutdown +1 "Euresys firmware update"
+
+  when: ansible_local['fort-0007-coaxlink-firmware'] is not defined or ansible_local['fort-0007-coaxlink-firmware']['firmware-version'] != coaxlink_firmware_version or ansible_local['fort-0007-coaxlink-firmware']['firmware-variant'] != coaxlink_firmware_variant

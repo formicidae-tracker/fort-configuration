@@ -1,0 +1,15 @@
+#!/bin/sh
+
+COAXLINK_FIRMWARE_EXE=/opt/euresys/coaxlink/firmware/coaxlink-firmware
+
+if [ -x $COAXLINK_FIRMWARE_EXE ]
+then
+	DATA=$($COAXLINK_FIRMWARE_EXE)
+	FIRMWARE_VERSION=$(echo "$DATA" | grep revision | head -n 1 | cut -d " " -f 7)
+	FIRMWARE_VARIANT=$(echo "$DATA" | grep variant | head -n 1 | cut -d "(" -f 2 | rev | cut -c 2- | rev)
+else
+	FIRMWARE_VERSION="000"
+	FIRMWARE_VARIANT="none"
+fi
+
+echo "{ \"firmware-version\":${FIRMWARE_VERSION}, \"firmware-variant\":\"$FIRMWARE_VARIANT\" }"
