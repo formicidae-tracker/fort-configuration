@@ -4,7 +4,7 @@ kernel_version: 4.15.0-51-generic
 euresys_memento_version: 10.6.0.50
 euresys_coaxlink_version: 10.6.1.74
 euresys_arch: x86_64
-artemis_version: v0.1.4-dev6
+artemis_version: v0.1.4
 hermes_version: v0.1.8
 apriltag_version: v3.0.0
 leto_version: v0.1.4
