@@ -2,6 +2,12 @@
 
 ## This playbook deploys the leto (tracking software) stack of the FORmicidae Tracker
 
+################################################################################
+# W A R N I N G
+################################################################################
+# The coaxlink-firmware role should always be put last he restarts the
+# computer if needed
+
 - hosts: vision_masters,vision_slaves
   roles:
     - local-ntp
