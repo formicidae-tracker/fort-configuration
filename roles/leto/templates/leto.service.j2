@@ -1,7 +1,6 @@
 [Unit]
 Description=Leto: manages Artemis
-After=syslog.target
-After=network.target
+After=syslog.target network-online.target
 
 [Service]
 User=leto
