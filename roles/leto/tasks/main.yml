@@ -93,21 +93,14 @@
 
   when: ansible_local['fort-0006-leto-version'] is not defined or ansible_local['fort-0006-leto-version']['leto-version'] != leto_version
 
-- name: adds leto user
-  user:
-    name: leto
-    system: yes
-    home: /var/lib/leto
-    create_home: yes
-    state: present
 
 - name: ensures data dir is existing
   file:
     name: "{{leto_data_dir}}"
     state: directory
     mode: '0755'
-    owner: leto
-    group: leto
+    owner: fort-user
+    group: fort-user
 
 - name: installs rsyslog handler
   template:
