@@ -10,6 +10,6 @@ euresys_arch: x86_64
 artemis_version: v0.2.0
 hermes_version: v0.1.11
 apriltag_version: v3.0.0
-leto_version: v0.2.0
+leto_version: v0.2.1
 leto_data_dir: /data/fort-user
 coaxlink_firmware_version: 273
