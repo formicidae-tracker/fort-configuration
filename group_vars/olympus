@@ -2,4 +2,4 @@
 
 nginx_version: 1.17.0
 nginx_rtmp_version: 1.2.1
-olympus_version: v0.1.0-dev2
+olympus_version: v0.2.0
