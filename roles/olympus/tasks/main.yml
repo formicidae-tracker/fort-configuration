@@ -17,7 +17,7 @@
 
   - name: installs node
     apt:
-      name: ['npm', 'git']
+      name: ['nodejs', 'git']
       default_release: stretch-backports
       state: present
 
@@ -28,7 +28,7 @@
       global: yes
     with_items:
       - yarn
-      - ng-cli
+      - "@angular/cli"
 
   - name: creates system user olympus
     user:
@@ -50,7 +50,7 @@
       /usr/local/go/bin/go build
       cd webapp
       yarn install
-      yarn build
+      yarn build --prod
 
 
 

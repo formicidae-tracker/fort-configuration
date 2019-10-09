@@ -115,3 +115,8 @@
   notify:
     - enables leto service
     - restarts leto service
+
+- name: installs leto default configuration
+  template:
+    src: leto.yml.j2
+    dest: /etc/default/leto.yml

@@ -12,6 +12,11 @@
     group: root
     mode: '0755'
 
+- name: installs runtime dependencies
+  apt:
+    name: ['ffmpeg']
+    state: present
+
 - name: installs nginx with rtmp module
   block:
   - name: install nginx dependencies
@@ -92,23 +97,52 @@
       name: nginx-rtmp
       state: started
 
-  - name: sets default server configuration
-    template:
-      src: default.j2
-      dest: /usr/local/nginx/conf/sites-available/default
-    notify: restarts nginx-rtmp
-
-  - name: enables default server
-    file:
-      src: /usr/local/nginx/conf/sites-available/default
-      dest: /usr/local/nginx/conf/sites-enabled/default
-      state: link
-    notify: restarts nginx-rtmp
-
   when:  ansible_local['fort-0002-nginx-rtmp-version'] is not defined or ansible_local['fort-0002-nginx-rtmp-version']['nginx-version'] != nginx_version or ansible_local['fort-0002-nginx-rtmp-version']['nginx-rtmp-version'] != nginx_rtmp_version
 
 - name: Sets nginx configuration
   template:
     src: nginx.conf.j2
     dest: /usr/local/nginx/conf/nginx.conf
+  notify: restarts nginx-rtmp
+
+- name: Ensures tmpfs mount point is present
+  file:
+    path: /var/www/olympus
+    state: directory
+    group: www-data
+    owner: www-data
+    mode: 0755
+
+- name: Ensures tmpfs folder for streaming is present
+  mount:
+    path: /var/www/olympus
+    fstype: tmpfs
+    opts: size=512m
+    src: tmpfs
+    state: present
+  notify: restarts nginx-rtmp
+
+# - name : Ensures
+#   file:
+#     path: "{{ item }}"
+#     state: directory
+#     mode: 0755
+#     owner: www-data
+#     group: www-data
+#   with_items:
+#     - /var/www/olympus/hls
+#     - /var/www/olympus/keyframes
+
+
+- name: sets default server configuration
+  template:
+    src: default.j2
+    dest: /usr/local/nginx/conf/sites-available/default
+  notify: restarts nginx-rtmp
+
+- name: enables default server
+  file:
+    src: /usr/local/nginx/conf/sites-available/default
+    dest: /usr/local/nginx/conf/sites-enabled/default
+    state: link
   notify: restarts nginx-rtmp
