@@ -110,6 +110,11 @@
     dest: /etc/rsyslog.d/leto.conf
   notify: restarts rsyslog
 
+- name: installs logrotate configuration
+  template:
+    src: logrotate.conf.j2
+    dest: /etc/logrotate.d/leto
+
 - name: installs leto service
   template:
     src: leto.service.j2
