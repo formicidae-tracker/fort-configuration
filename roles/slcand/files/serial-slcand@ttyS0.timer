@@ -1,0 +1,5 @@
+[Timer]
+OnBootSec=3min
+
+[Install]
+WantedBy=timers.target

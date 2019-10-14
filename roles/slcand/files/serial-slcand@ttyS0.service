@@ -10,7 +10,7 @@ Description=Serial CAN on %I
 BindsTo=dev-%i.device
 After=dev-%i.device systemd-user-sessions.service plymouth-quit-wait.service
 After=rc-local.service
-After=network.target
+After=network-online.target
 
 # If additional gettys are spawned during boot then we should make
 # sure that this is synchronized before getty.target, even though
@@ -19,7 +19,7 @@ IgnoreOnIsolate=yes
 
 [Service]
 ExecStart= /usr/bin/slcand -ofs 5 -S 115200 /dev/ttyS0
-ExecStartPost= /bin/sleep 1
+ExecStartPost= /bin/sleep 2
 ExecStartPost= /sbin/ip link set slcan0 up
 Type=forking
 GuessMainPID=yes

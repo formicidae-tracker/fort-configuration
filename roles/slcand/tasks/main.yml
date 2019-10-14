@@ -9,8 +9,24 @@
     src: serial-slcand@ttyS0.service
     dest: /etc/systemd/system/serial-slcand@ttyS0.service
 
-- name : enables serial-slcand@ttyS0
+- name: installs serial-slcand@ttyS0 timer
+  copy:
+    src: serial-slcand@ttyS0.timer
+    dest: /etc/systemd/system/serial-slcand@ttyS0.timer
+
+
+- name : disables serial-slcand@ttyS0
   systemd:
-    name: serial-slcand@ttyS0
-    enabled: yes
+    name: serial-slcand@ttyS0.service
+    enabled: false
     state: started
+
+- name : enables serial-slcand@ttyS0 timer
+  systemd:
+    name: serial-slcand@ttyS0.timer
+    enabled: true
+
+
+- name: reloads daemon
+  systemd:
+    daemon-reload: yes
