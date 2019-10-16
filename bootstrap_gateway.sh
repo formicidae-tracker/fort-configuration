@@ -6,7 +6,7 @@ set -e
 # Debian Version check
 ################################################################################
 
-SUPPORTED_VERSION="9"
+SUPPORTED_VERSION="10"
 
 if [ -e /etc/debian_version ]
 then
