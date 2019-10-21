@@ -13,4 +13,4 @@ apriltag_version: v3.0.0
 leto_version: v0.2.3
 leto_data_dir: /data/fort-user
 coaxlink_firmware_version: 273
-olympus_stream_server: castle-black.local
+olympus_stream_server: circus.local
