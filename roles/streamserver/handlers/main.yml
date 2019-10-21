@@ -10,3 +10,14 @@
   systemd:
     state: restarted
     name: nginx-rtmp
+
+- name: enables nginx
+  systemd:
+    enabled: yes
+    name: nginx
+    daemon_reload: yes
+
+- name: restarts nginx
+  systemd:
+    state: restarted
+    name: nginx

@@ -1,8 +1,8 @@
 ---
-- name: removes distribution nginx
+- name: Installs distribution nginx
   apt:
     name: nginx
-    state: absent
+    state: present
 
 - name: installs custom fact
   copy:
@@ -117,32 +117,26 @@
   mount:
     path: /var/www/olympus
     fstype: tmpfs
-    opts: size=512m
+    opts: "size={{tmpfs_size}}"
     src: tmpfs
     state: present
   notify: restarts nginx-rtmp
 
-# - name : Ensures
-#   file:
-#     path: "{{ item }}"
-#     state: directory
-#     mode: 0755
-#     owner: www-data
-#     group: www-data
-#   with_items:
-#     - /var/www/olympus/hls
-#     - /var/www/olympus/keyframes
-
-
 - name: sets default server configuration
   template:
     src: default.j2
-    dest: /usr/local/nginx/conf/sites-available/default
-  notify: restarts nginx-rtmp
+    dest: /etc/nginx/sites-available/default
+  notify: restarts nginx
 
-- name: enables default server
+- name: enables default server in distribution nginx
   file:
-    src: /usr/local/nginx/conf/sites-available/default
-    dest: /usr/local/nginx/conf/sites-enabled/default
+    src: /etc/nginx/sites-available/default
+    dest: /etc/nginx/sites-enabled/default
     state: link
+  notify: restarts nginx
+
+- name: disables default http server in nginx-rtmp
+  file:
+    name: /usr/local/nginx/conf/sites-enabled/default
+    state: absent
   notify: restarts nginx-rtmp
