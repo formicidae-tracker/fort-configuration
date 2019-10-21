@@ -117,7 +117,7 @@
   mount:
     path: /var/www/olympus
     fstype: tmpfs
-    opts: size=512m
+    opts: "size={{tmpfs_size}}"
     src: tmpfs
     state: present
   notify: restarts nginx-rtmp
