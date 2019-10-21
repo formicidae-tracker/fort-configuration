@@ -18,7 +18,7 @@
   - name: installs node
     apt:
       name: ['nodejs', 'git']
-      default_release: stretch-backports
+      default_release: "{{ansible_distribution_release}}-backports"
       state: present
 
   - name: installs yarn and angular cli
