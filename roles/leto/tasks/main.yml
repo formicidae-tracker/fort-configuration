@@ -9,9 +9,20 @@
   apt_repository:
     repo: ppa:maarten-fonville/protobuf
 
+- name: adds kitware repository key
+  shell: |
+    wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | sudo apt-key add -
+
+- name: adds kitware repository
+  apt_repository:
+    repo: deb https://apt.kitware.com/ubuntu/ bionic main
+    state: present
+    filename: kitware
+
 - name: installs required packages
   apt:
     name: ['libprotobuf-dev', 'git', 'git-lfs', 'cmake', 'protobuf-compiler', 'libgoogle-glog-dev', 'libopencv-dev', 'libopencv-imgproc-dev', 'libopencv-highgui-dev', 'libasio-dev', 'libboost-dev', 'libeigen3-dev', 'google-mock', 'ffmpeg' ]
+    state: latest
 
 - name: installs apriltag
   block:
