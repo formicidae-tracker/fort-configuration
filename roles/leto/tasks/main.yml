@@ -9,52 +9,20 @@
   apt_repository:
     repo: ppa:maarten-fonville/protobuf
 
+- name: adds kitware repository key
+  shell: |
+    wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | sudo apt-key add -
+
+- name: adds kitware repository
+  apt_repository:
+    repo: deb https://apt.kitware.com/ubuntu/ bionic main
+    state: present
+    filename: kitware
+
 - name: installs required packages
   apt:
     name: ['libprotobuf-dev', 'git', 'git-lfs', 'cmake', 'protobuf-compiler', 'libgoogle-glog-dev', 'libopencv-dev', 'libopencv-imgproc-dev', 'libopencv-highgui-dev', 'libasio-dev', 'libboost-dev', 'libeigen3-dev', 'google-mock', 'ffmpeg' ]
-
-- name: installs apriltag
-  block:
-  - name: downloads apriltag source
-    git:
-      name: https://github.com/AprilRobotics/apriltag.git
-      dest: /usr/local/src/apriltag
-      version: "{{ apriltag_version }}"
-      force: yes
-
-  - name: installs apriltags
-    shell: |
-      cd /usr/local/src/apriltag
-      sed -i 's/0\.10\.0/3.0.0/' apriltag.pc.in
-      mkdir build
-      cd build
-      cmake -DCMAKE_BUILD_TYPE=Release ../
-      make
-      make install
-      ldconfig
-
-  when: ansible_local['fort-0006-leto-version'] is not defined or ansible_local['fort-0006-leto-version']['apriltag-version'] != apriltag_version
-
-- name: installs hermes
-  block:
-  - name: downloads hermes sources
-    git:
-      name: https://github.com/formicidae-tracker/hermes.git
-      dest: /usr/local/src/hermes
-      version: "{{hermes_version}}"
-      force: yes
-
-  - name: installs hermes
-    shell: |
-      cd /usr/local/src/hermes
-      mkdir -p build
-      cd build
-      cmake ../ -DCMAKE_BUILD_TYPE=Release
-      make
-      make install
-      ldconfig
-
-  when: ansible_local['fort-0006-leto-version'] is not defined or ansible_local['fort-0006-leto-version']['hermes-version'] != hermes_version
+    state: latest
 
 - name: installs artemis
   block:
