@@ -7,7 +7,7 @@ zeus_version: v0.1.0-dev2
 euresys_memento_version: 10.6.0.50
 euresys_coaxlink_version: 10.6.1.74
 euresys_arch: x86_64
-artemis_version: v0.2.3
+artemis_version: v0.2.4
 leto_version: v0.2.5
 leto_data_dir: /data/fort-user
 coaxlink_firmware_version: 273
