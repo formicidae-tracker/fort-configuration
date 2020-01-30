@@ -25,3 +25,8 @@
   systemd:
     name: serial-slcand@ttyS0.timer
     enabled: true
+
+
+- name: reloads daemon
+  systemd:
+    daemon-reload: yes

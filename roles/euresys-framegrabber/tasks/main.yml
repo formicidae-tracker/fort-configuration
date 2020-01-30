@@ -7,6 +7,11 @@
     group: root
     mode: '0755'
 
+- name: disables kernel unattended upgrades
+  copy:
+    src: 50unattended-upgrades
+    dest: /etc/apt/apt.conf.d/50unattended-upgrades
+
 - name: ensures build-essential packages
   apt:
     name: [ 'build-essential','apt-file','libgconf2-4','dkms']
