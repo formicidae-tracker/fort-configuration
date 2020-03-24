@@ -1,9 +1,18 @@
 ---
 
-- name: install nfs-utility
+- name: installs nfs-utility
   apt:
     name: nfs-kernel-server
     state: present
+
+- name: ensures exported directory is present
+  file:
+    name: "{{leto_data_dir}}/fort-experiments"
+    state: directory
+    owner: fort-user
+    group: fort-user
+    mode: 0755
+  notify: "restarts nfs"
 
 - name: sets the nfs configuration
   template:
