@@ -8,6 +8,18 @@ server {
 
     server_name _;
 
+    location /nodes/ {
+        root /srv;
+
+        autoindex on;
+        sendfile on;
+        sendfile_max_chunk 1m;
+        tcp_nopush on;
+
+        auth_basic "private area";
+        auth_basic_user_file "/etc/nginx/htpasswd";
+    }
+
     location /olympus {
         # add the following, to enable CORS
         # CORS OPTIONS

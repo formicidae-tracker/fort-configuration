@@ -5,14 +5,9 @@
 - hosts: all
   roles:
     - common
-# Olympus is the public gateway of FORT
-- import_playbook: olympus.yml
 # Zeuses are the climate control node of FORT
 - import_playbook: zeus.yml
 # Letos are the tracking node of FORT
-################################################################################
-# W A R N I N G
-################################################################################
-# Leto role should be put last !!! It retsarts the computer without
-# the reboot module
 - import_playbook: leto.yml
+# Olympus is the public gateway of FORT
+- import_playbook: olympus.yml

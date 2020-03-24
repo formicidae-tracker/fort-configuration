@@ -14,7 +14,7 @@
 
 - name: installs runtime dependencies
   apt:
-    name: ['ffmpeg']
+    name: ['ffmpeg', 'python-passlib']
     state: present
 
 - name: installs nginx with rtmp module
@@ -99,11 +99,6 @@
 
   when:  ansible_local['fort-0002-nginx-rtmp-version'] is not defined or ansible_local['fort-0002-nginx-rtmp-version']['nginx-version'] != nginx_version or ansible_local['fort-0002-nginx-rtmp-version']['nginx-rtmp-version'] != nginx_rtmp_version
 
-- name: Sets nginx configuration
-  template:
-    src: nginx.conf.j2
-    dest: /usr/local/nginx/conf/nginx.conf
-  notify: restarts nginx-rtmp
 
 - name: Ensures tmpfs mount point is present
   file:
@@ -119,7 +114,37 @@
     fstype: tmpfs
     opts: "size={{tmpfs_size}}"
     src: tmpfs
-    state: present
+    state: mounted
+  notify: restarts nginx-rtmp
+
+- name : Creates nodes directory
+  file:
+    path: /srv/nodes/{{ item | regex_replace('\.local') }}
+    state: directory
+  with_items: "{{ groups['vision_masters'] + groups['vision_slaves'] | unique }}"
+
+- name : Mount nfs nodes
+  mount:
+    path: /srv/nodes/{{ item | regex_replace('\.local') }}
+    fstype: nfs
+    src: "{{ item }}:{{leto_data_dir}}/fort-experiments"
+    state: mounted
+  with_items: "{{ groups['vision_masters'] + groups['vision_slaves'] | unique }}"
+
+- name : Sets basic auth
+  htpasswd:
+    path: /etc/nginx/htpasswd
+    name: fort-user
+    password: "{{ basic_auth_password }}"
+    owner: root
+    group: www-data
+    mode: 0640
+  notify: restarts nginx
+
+- name: Sets nginx configuration
+  template:
+    src: nginx.conf.j2
+    dest: /usr/local/nginx/conf/nginx.conf
   notify: restarts nginx-rtmp
 
 - name: sets default server configuration
