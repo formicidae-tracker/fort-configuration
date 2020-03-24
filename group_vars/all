@@ -12,3 +12,4 @@ leto_version: v0.2.5
 leto_data_dir: /data/fort-user
 coaxlink_firmware_version: 273
 olympus_stream_server: castle-black.local
+basic_auth_password: <some-passwd>
