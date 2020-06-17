@@ -129,7 +129,7 @@
     fstype: nfs
     src: "{{ item }}:{{leto_data_dir}}/fort-experiments"
     state: mounted
-    opts: soft,bg,ro
+    opts: soft,bg,ro,timeo=7
   with_items: "{{ groups['vision_masters'] + groups['vision_slaves'] | unique }}"
 
 - name : Sets basic auth
