@@ -41,6 +41,7 @@
       cmake ../ -DCMAKE_BUILD_TYPE=Release
       make
       make install
+      ldconfig
 
   when: ansible_local['fort-0006-leto-version'] is not defined or ansible_local['fort-0006-leto-version']['artemis-version'] != artemis_version
 
