@@ -7,14 +7,9 @@ delim="{"
 
 for p in $PACKAGES
 do
-	DIR=/usr/local/src/$p
-	echo -n "$delim\"$p-version\":\""
-	if [ -d $DIR/.git ]
-	then
-		cd $DIR
-		echo -n $(git describe --tags 2>/dev/null)
-	fi
-	echo -n "\""
+	version_string=$(timeout 0.5s $p --version || echo "NONE")
+	version=${version_string#"$p "}
+	echo -n "$delim\"$p-version\":\"$version\""
 	delim=", "
 done
 

@@ -21,7 +21,25 @@
 
 - name: installs required packages
   apt:
-    name: ['libprotobuf-dev', 'git', 'git-lfs', 'cmake', 'protobuf-compiler', 'libgoogle-glog-dev', 'libopencv-dev', 'libopencv-imgproc-dev', 'libopencv-highgui-dev', 'libasio-dev', 'libboost-dev', 'libeigen3-dev', 'google-mock', 'ffmpeg' ]
+    name: ['libprotobuf-dev',
+    'git',
+    'git-lfs',
+    'cmake',
+    'protobuf-compiler',
+    'libgoogle-glog-dev',
+    'libopencv-dev',
+    'libopencv-imgproc-dev',
+    'libopencv-highgui-dev',
+    'libboost-system-dev',
+    'libglfw3-dev',
+    'libglew-dev',
+    'libasio-dev',
+    'libboost-dev',
+    'libeigen3-dev',
+    'libfontconfig1-dev',
+    'libfreetype6-dev',
+    'google-mock',
+    'ffmpeg' ]
     state: latest
 
 - name: installs artemis
@@ -35,15 +53,23 @@
 
   - name: compiles artemis
     shell: |
+      set -e
+      export PATH="$PATH:/usr/local/go/bin"
       cd /usr/local/src/artemis
       mkdir -p build
       cd build
       cmake ../ -DCMAKE_BUILD_TYPE=Release
       make
       make install
+      rm -f /usr/local/lib/libapriltag.so
+      rm -f /usr/local/lib/libapriltag.so.3
+      rm -f /usr/local/lib/libapriltag.so.3.0.0
       ldconfig
+    notify: restarts leto service
 
   when: ansible_local['fort-0006-leto-version'] is not defined or ansible_local['fort-0006-leto-version']['artemis-version'] != artemis_version
+
+
 
 - name: installs leto from sources
   block:
