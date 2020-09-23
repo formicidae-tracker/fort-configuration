@@ -59,7 +59,7 @@
       mkdir -p build
       cd build
       cmake ../ -DCMAKE_BUILD_TYPE=Release
-      make
+      make -j 11
       make install
       rm -f /usr/local/lib/libapriltag.so
       rm -f /usr/local/lib/libapriltag.so.3
