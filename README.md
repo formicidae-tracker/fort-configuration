@@ -2,7 +2,10 @@
 
 This repository holds the ansible roles and configuration of the fort system.
 
+## Mandatory variable
 
+For a proper configuration, one must sets the appropriate variable in
+`group_vars/all`.
 
 ## Site branches
 
