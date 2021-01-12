@@ -1,15 +1,21 @@
- - name: Ensures avahi-daemon
-   apt:
-     name: avahi-daemon
-     state: latest
+---
+- name: Ensure sensible variable are set
+  fail:
+    msg: "You must define the sensible variables 'vault_olympus_stream_server' and 'vault_slack_webhook' in 'group_vars/vault'"
+  when: vault_slack_webhook == '' || vault_olympus_stream_server == ''
 
- - name: Install common utilities
-   apt:
-     name: "{{ packages }}"
-   vars:
-     packages:
-     - tmux
-     - emacs
-     - vim
-     - aptitude
-     - cockpit
+- name: Ensures avahi-daemon
+  apt:
+    name: avahi-daemon
+    state: latest
+
+- name: Install common utilities
+  apt:
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - tmux
+      - emacs
+      - vim
+      - aptitude
+      - cockpit
