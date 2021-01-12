@@ -1,0 +1,24 @@
+---
+- name: install crashdump services
+  apt:
+    name: linux-crashdump
+    state: present
+    
+- name: install user greet service
+  template:
+    src: helloslack.service.j2
+    dest: /home/fort-user/.config/systemd/user/helloslack.service
+    owner: fort-user
+    group: fort-user
+    mode: '0644'
+
+- name: installs greet service
+  file:
+    src: /home/fort-user/.config/systemd/user/helloslack.service
+    dest: /home/fort-user/.config/systemd/user/default.target.wants/helloslack.service
+    state: link
+    owner: fort-user
+    group: fort-user
+    mode: '0644'
+
+    

@@ -1,0 +1,14 @@
+[Unit]
+Description=Hello World to slack
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStartPre=/bin/sleep 10
+# Replace this with x0vncserver from TigerVNC in Ubuntu 18.04.
+# Set password by running `sudo x11vnc -storepasswd [PASSWORD] /etc/x11vnc.passwd`
+ExecStart=/usr/bin/curl -X POST -H 'Content-type: application/json' --data '{"text":"alleline started."}' https://hooks.slack.com/services/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
+
+[Install]
+WantedBy=default.target

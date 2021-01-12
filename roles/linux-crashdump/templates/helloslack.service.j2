@@ -1,0 +1,12 @@
+[Unit]
+Description=Hello World to slack
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStartPre=/bin/sleep 10
+ExecStart=/usr/bin/curl -X POST -H 'Content-type: application/json' --data '{"text":" {{ ansible_hostname }} started."}' {{ slack_post_url }}
+
+[Install]
+WantedBy=default.target
