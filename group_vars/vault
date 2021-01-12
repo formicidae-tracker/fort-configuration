@@ -1,0 +1,7 @@
+---
+
+# This sensible variables must be set for these repository's playbook
+# to work.
+
+vault_olympus_stream_server:
+vault_slack_webhook:
