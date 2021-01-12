@@ -5,7 +5,11 @@
     mode: '0755'
     owner: root
     group: root
-  notify: reload facts
+  register: custom_fact_installed
+
+- name: reloads facts
+  setup:
+  when: custom_fact_installed.changed == True
 
 - name: installs desired go version
   block:
