@@ -4,7 +4,11 @@
     src: fort-olympus-version.fact
     dest: /etc/ansible/facts.d/fort-olympus-version.fact
     mode: '0755'
-  notify: reload facts
+  register: custom_fact_installed
+
+- name: reloads facts
+  setup:
+  when: custom_fact_installed.changed == True
 
 - name: installs olympus
   block:

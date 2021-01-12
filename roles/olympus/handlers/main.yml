@@ -1,6 +1,4 @@
 ---
-- name: reload facts
-  setup:
 
 - name: restarts rsyslog
   systemd:
