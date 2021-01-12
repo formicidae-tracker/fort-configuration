@@ -2,7 +2,7 @@
 - name: Ensure sensible variable are set
   fail:
     msg: "You must define the sensible variables 'vault_olympus_stream_server' and 'vault_slack_webhook' in 'group_vars/vault'"
-  when: vault_slack_webhook == '' || vault_olympus_stream_server == ''
+  when: vault_slack_webhook == None or vault_olympus_stream_server == None
 
 - name: Ensures avahi-daemon
   apt:
