@@ -1,0 +1,18 @@
+---
+- name: disable vncserver service
+  file:
+    name: "{{item}}"
+    state: absent
+  with_items:
+    - /home/fort-user/.config/systemd/user/vncserver.service
+    - /home/fort-user/.config/systemd/user/default.target.wants/vncserver.service
+  notify: reboot machine
+
+- name: removes x11vnc
+  apt:
+    name: x11vnc
+    state: absent
+
+- handlers:
+    name: reboot machine
+      reboot:

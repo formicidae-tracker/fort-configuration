@@ -1,23 +1,10 @@
 ---
 - name: installs custom facts
   copy:
-    src: fort-0006-leto-version.fact
-    dest: /etc/ansible/facts.d/fort-0006-leto-version.fact
+    src: fort-leto-version.fact
+    dest: /etc/ansible/facts.d/fort-leto-version.fact
     mode: '0755'
-
-- name: adds protobuf ppa
-  apt_repository:
-    repo: ppa:maarten-fonville/protobuf
-
-- name: adds kitware repository key
-  shell: |
-    wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | sudo apt-key add -
-
-- name: adds kitware repository
-  apt_repository:
-    repo: deb https://apt.kitware.com/ubuntu/ bionic main
-    state: present
-    filename: kitware
+  notify: reload facts
 
 - name: installs required packages
   apt:
@@ -67,9 +54,7 @@
       ldconfig
     notify: restarts leto service
 
-  when: ansible_local['fort-0006-leto-version'] is not defined or ansible_local['fort-0006-leto-version']['artemis-version'] != artemis_version
-
-
+  when: ansible_local['fort-leto-version']['artemis-version'] != artemis_version
 
 - name: installs leto from sources
   block:
@@ -87,8 +72,7 @@
         install leto /usr/local/bin
       notify: restarts leto service
 
-
-  when: ansible_local['fort-0006-leto-version'] is not defined or ansible_local['fort-0006-leto-version']['leto-version'] != leto_version
+  when: ansible_local['fort-leto-version']['leto-version'] != leto_version
 
 
 - name: ensures data dir is existing

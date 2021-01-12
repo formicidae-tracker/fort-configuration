@@ -1,10 +1,10 @@
 ---
 - name: installs custom fact
   copy:
-    src: fort-0003-olympus-version.fact
-    dest: /etc/ansible/facts.d/fort-0003-olympus-version.fact
+    src: fort-olympus-version.fact
+    dest: /etc/ansible/facts.d/fort-olympus-version.fact
     mode: '0755'
-
+  notify: reload facts
 
 - name: installs olympus
   block:
@@ -52,9 +52,7 @@
       yarn install
       yarn build --prod
 
-
-
-  when:  ansible_local['fort-0003-olympus-version'] is not defined or ansible_local['fort-0003-olympus-version']['olympus-version'] != olympus_version
+  when: ansible_local['fort-olympus-version']['olympus-version'] != olympus_version
 
 - name: installs rsyslog handler
   template:

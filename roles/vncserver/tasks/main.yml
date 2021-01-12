@@ -13,37 +13,15 @@
     src: daemon.conf
     dest: /etc/gdm3/custom.conf
 
-- name: installs vncserver
+- name: installs vino server
   apt:
-    name: x11vnc
+    name: vino
     state: present
 
-- name: makes users systemd config dir
-  file:
-    name: /home/fort-user/.config/systemd/user/default.target.wants
-    state: directory
-    owner: fort-user
-    group: fort-user
-    mode: '0755'
-
-- name: adds user systemd service
-  copy:
-    src: vncserver.service
-    dest: /home/fort-user/.config/systemd/user/vncserver.service
-    owner: fort-user
-    group: fort-user
-    mode: '0644'
-
-- name: installs user service
-  file:
-    src: /home/fort-user/.config/systemd/user/vncserver.service
-    dest: /home/fort-user/.config/systemd/user/default.target.wants/vncserver.service
-    state: link
-    owner: fort-user
-    group: fort-user
-    mode: '0644'
-  register: service_installed
-
-- name: reboots machine
-  reboot:
-  when: service_installed is defined and service_installed.changed == True
+- name: setup vinoserver
+  become_user: fort-user
+  shell: |
+    gsettings set org.gnome.Vino prompt-enabled false
+    gsettings set org.gnome.Vino require-encryption false
+    eths=$(nmcli -t -f uuid,type c s --active | grep 802 | awk -F  ":" '{ print "'\''" $1 "'\''" }' | paste -s -d, -)
+    gsettings set org.gnome.settings-daemon.plugins.sharing.service:/org/gnome/settings-daemon/plugins/sharing/vino-server/ enabled-connections "[ $eths ]"

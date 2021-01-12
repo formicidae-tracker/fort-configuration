@@ -9,3 +9,7 @@
   systemd:
     name: euresys_kernel_modules
     state: restarted
+    
+- name: reload facts
+  setup:
+  

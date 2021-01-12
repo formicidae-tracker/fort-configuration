@@ -1,11 +1,12 @@
 ---
 - name: installs custom fact
   copy:
-    src: fort-0005-euresys-version.fact
-    dest: /etc/ansible/facts.d/fort-0005-euresys-version.fact
+    src: fort-euresys-version.fact
+    dest: /etc/ansible/facts.d/fort-euresys-version.fact
     owner: root
     group: root
     mode: '0755'
+  notify: reload facts
 
 - name: ensures build-essential packages
   apt:
@@ -79,4 +80,4 @@
       - { name: "memento", version: "{{ euresys_memento_version }}" }
       - { name: "coaxlink", version: "{{ euresys_coaxlink_version }}" }
 
-  when: ansible_local['fort-0005-euresys-version'] is not defined or ansible_local['fort-0005-euresys-version']['memento-version'] != euresys_memento_version or ansible_local['fort-0005-euresys-version']['coaxlink-version'] != euresys_coaxlink_version
+  when: ansible_local['fort-euresys-version'] is not defined or ansible_local['fort-euresys-version']['memento-version'] != euresys_memento_version or ansible_local['fort-euresys-version']['coaxlink-version'] != euresys_coaxlink_version

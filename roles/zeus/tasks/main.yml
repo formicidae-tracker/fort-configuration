@@ -1,9 +1,10 @@
 ---
 - name: installs custom fact
   copy:
-    src: fort-0004-zeus-version.fact
-    dest: /etc/ansible/facts.d/fort-0004-zeus-version.fact
+    src: fort-zeus-version.fact
+    dest: /etc/ansible/facts.d/fort-zeus-version.fact
     mode: '0755'
+  notify: reload facts
 
 - name: installs zeus and utilities
   block:
@@ -26,4 +27,4 @@
       make
       make install
 
-  when:  ansible_local['fort-0004-zeus-version'] is not defined or ansible_local['fort-0004-zeus-version']['zeus-version'] != zeus_version
+  when:  ansible_local['fort-zeus-version']['zeus-version'] != zeus_version
