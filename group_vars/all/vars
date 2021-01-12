@@ -11,3 +11,5 @@ artemis_version: v0.4.2
 leto_version: v0.4.1
 leto_data_dir: /data/fort-user
 coaxlink_firmware_version: 273
+olympus_stream_server: "{{vault_olympus_stream_server}}"
+slack_webhook: "{{vault_slack_webhook}}"
