@@ -2,6 +2,8 @@
 
 COAXLINK_FIRMWARE_EXE=/opt/euresys/coaxlink/firmware/coaxlink-firmware
 
+modprobe coaxlink
+
 if [ -x $COAXLINK_FIRMWARE_EXE ]
 then
 	DATA=$($COAXLINK_FIRMWARE_EXE)

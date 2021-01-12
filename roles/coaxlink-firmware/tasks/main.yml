@@ -7,6 +7,9 @@
     group: root
     mode: '0755'
 
+- name: reloads coaxlink-firmware facts
+  setup: 
+  
 - name: updates firmware if needed
   block:
   - name: upload firmware

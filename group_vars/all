@@ -12,3 +12,4 @@ leto_version: v0.4.1
 leto_data_dir: /data/fort-user
 coaxlink_firmware_version: 273
 olympus_stream_server: circus.local
+slack_post_url: https://hooks.slack.com/services/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

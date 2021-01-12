@@ -5,6 +5,7 @@
 - hosts: all
   roles:
     - common
+    - linux-crashdump
 # Zeuses are the climate control node of FORT
 - import_playbook: zeus.yml
 # Letos are the tracking node of FORT
