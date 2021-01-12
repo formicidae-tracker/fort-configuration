@@ -1,5 +1,8 @@
 ---
-- name: remvove custom facts folder
-  file:
-    name: /etc/ansible/facts.d
-    state: absent
+
+- hosts: all
+  tasks:
+    - name: removes custom facts folder
+      file:
+        name: /etc/ansible/facts.d
+        state: absent

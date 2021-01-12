@@ -1,12 +1,12 @@
 ---
-- name: removes protobuf ppa
-  apt_repository:
-    repo: ppa:maarten-fonville/protobuf
-    state: absent
-
-
-- name: removes kitware repository
-  apt_repository:
-    repo: deb https://apt.kitware.com/ubuntu/ bionic main
-    state: absent
-    filename: kitware
+- hosts: all
+  tasks:
+    - name: removes protobuf ppa
+      apt_repository:
+        repo: ppa:maarten-fonville/protobuf
+        state: absent
+    - name: removes kitware repository
+      apt_repository:
+        repo: deb https://apt.kitware.com/ubuntu/ bionic main
+        state: absent
+        filename: kitware
