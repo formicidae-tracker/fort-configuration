@@ -13,6 +13,7 @@
     - local-ntp
     - slack-greeter
     - vncserver
+    - fixed-kernel
     - leto
     - data-webserver
     - coaxlink-firmware

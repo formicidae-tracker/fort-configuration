@@ -14,3 +14,4 @@ coaxlink_firmware_version: 343
 olympus_stream_server: "{{vault_olympus_stream_server}}"
 slack_webhook: "{{vault_slack_webhook}}"
 basic_auth_password: "{{vault_basic_auth_password}}"
+target_linux_kernel: 4.19.162

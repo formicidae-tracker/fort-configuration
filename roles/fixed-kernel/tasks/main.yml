@@ -1,0 +1,29 @@
+---
+- name: installs mainline kernel scripts
+  get_url:
+    url: https://raw.githubusercontent.com/pimlie/ubuntu-mainline-kernel.sh/master/ubuntu-mainline-kernel.sh
+    dest: /usr/local/bin/ubuntu-mainline-kernel.sh
+    owner: root
+    mode: '0755'
+
+- name: installs wanted kernel
+  shell: |
+    set -e
+    /usr/local/bin/ubuntu-mainline-kernel.sh -l | grep {{ target_linux_kernel }} 1>/dev/null && exit 0
+
+    /usr/local/bin/ubuntu-mainline-kernel.sh -i {{ target_linux_kernel }} --yes 1>/dev/null
+
+    update-grub 1>/dev/null
+
+    MENU_ID=$(grep submenu /boot/grub/grub.cfg  | cut -d "'" -f 4)
+    SUBMENU_ID=$(grep {{ target_linux_kernel }} /boot/grub/grub.cfg  | head -n 1 | cut -d "'" -f 4)
+
+    echo "GRUB_DEFAULT=\"$MENU_ID>$SUBMENU_ID\"" > /etc/default/grub.d/fixed-kernel.cfg
+
+    update-grub 1>/dev/null
+    echo "kernel_installed"
+  register: kernel_installation
+
+- name: reboots computer
+  reboot:
+  when: kernel_installation.stdout == "kernel_installed"
