@@ -7,8 +7,8 @@
 
 - name: sets nginx configuration
   template:
-    name: nginx_default.j2
-    dest: /etc/nginx/site-availables/default
+    src: nginx_default.j2
+    dest: /etc/nginx/sites-available/default
   notify: restart nginx
 
 - name: enables and starts nginx

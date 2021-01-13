@@ -21,7 +21,7 @@ server {
 
 	    {% for node in nodes %}
 
-	    location /nodes/{{node | regex_replace(\.local)}}/ {
+	    location /nodes/{{node | regex_replace('\.local')}}/ {
 	        proxy_pass http://{{node}}/;
 	    }
 
