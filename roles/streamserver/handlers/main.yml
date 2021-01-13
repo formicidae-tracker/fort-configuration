@@ -1,21 +1,9 @@
 ---
 
-- name: enable nginx-rtmp
-  systemd:
-    enabled: yes
-    name: nginx-rtmp
-    daemon_reload: yes
-
 - name: restart nginx-rtmp
   systemd:
     state: restarted
     name: nginx-rtmp
-
-- name: enable nginx
-  systemd:
-    enabled: yes
-    name: nginx
-    daemon_reload: yes
 
 - name: restart nginx
   systemd:

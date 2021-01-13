@@ -95,15 +95,8 @@
     template:
       src: nginx.service.j2
       dest: /etc/systemd/system/nginx-rtmp.service
-    notify: enable nginx-rtmp
-
-  - name: starts nginx service
-    systemd:
-      name: nginx-rtmp
-      state: started
 
   when:  ansible_local['fort-nginx-rtmp-version']['nginx-version'] != nginx_version or ansible_local['fort-nginx-rtmp-version']['nginx-rtmp-version'] != nginx_rtmp_version
-
 
 - name: ensures tmpfs mount point is present
   file:
@@ -163,4 +156,18 @@
   file:
     name: /usr/local/nginx/conf/sites-enabled/default
     state: absent
-  notify: restart nginx-rtmp
+  register: nginx_rtmp_default_disabled
+
+- name: restarts nginx-rtmp
+  service:
+    name: nginx-rtmp
+    daemon_reload: true
+    state: restarted
+  when: nginx_rtmp_default_disabled.changed == True
+
+- name: enables and starts nginx-rtmp-service
+  service:
+    name: nginx-rtmp
+    daemon_reload: true
+    enabled: true
+    state: started
