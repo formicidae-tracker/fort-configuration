@@ -1,0 +1,49 @@
+---
+
+- name: installs custom facts
+  copy:
+    src: fort-leto-cli-version.fact
+    dest: /etc/ansible/facts.d/fort-leto-cli-version.fact
+    mode: '0755'
+  register: custom_fact_installed
+
+- name: reloads facts
+  setup:
+  when: custom_fact_installed.changed == True
+
+- name: installs leto-cli
+  block:
+    - name: gets leto source
+      git:
+        name: https://github.com/formicidae-tracker/leto.git
+        dest: /usr/local/src/leto
+        version: "{{ leto_version }}"
+        force: yes
+
+    - name: installs leto-cli
+      shell: |
+        cd /usr/local/src/leto/leto-cli
+        /usr/local/go/bin/go build
+        install leto-cli /usr/local/bin/leto-cli
+
+  when: ansible_local['fort-leto-cli-version']['version'] != leto_version
+
+- name: installs leto-monitor script
+  template:
+    src: leto-monitor.sh.j2
+    dest: /usr/local/bin/leto-monitor.sh
+    mode: '0700'
+    owner: root
+  notify: restart leto-monitor
+
+- name: installs leto-monitor service
+  copy:
+    src: leto-monitor.service
+    dest: /etc/systemd/system/leto-monitor.service
+  notify: restart leto-monitor
+
+- name: starts leto-monitor service
+  service:
+    name: leto-monitor
+    enabled: true
+    state: started

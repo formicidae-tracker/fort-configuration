@@ -49,6 +49,7 @@
       cd /usr/local/src/artemis
       mkdir -p build
       cd build
+      rm -f CMakeCache.txt
       cmake ../ -DCMAKE_BUILD_TYPE=Release
       make -j 11
       make install
