@@ -1,8 +1,0 @@
-MAKE="make -C drivers/linux/ KDIR=/lib/modules/${kernelver}/build MODULE=coaxlink KBUILD_EXTRA_SYMBOLS=/opt/euresys/memento/drivers/linux/Module.symvers"
-CLEAN="make -C drivers/linux clean"
-DEST_MODULE_LOCATION="/kernel/drivers/char"
-BUILT_MODULE_NAME="coaxlink"
-BUILT_MODULE_LOCATION="drivers/linux/"
-PACKAGE_NAME="coaxlink"
-PACKAGE_VERSION="{{euresys_coaxlink_version}}"
-REMAKE_INITRD=yes
