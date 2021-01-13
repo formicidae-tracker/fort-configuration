@@ -1,6 +1,6 @@
 #!/bin/sh
 
-COAXLINK_FIRMWARE_EXE=/opt/euresys/coaxlink/firmware/coaxlink-firmware
+COAXLINK_FIRMWARE_EXE=/opt/euresys/egrabber/firmware/coaxlink-firmware
 
 if [ -x $COAXLINK_FIRMWARE_EXE ]
 then

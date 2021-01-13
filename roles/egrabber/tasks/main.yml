@@ -1,0 +1,37 @@
+---
+- name: installs custom fact
+  copy:
+    src: fort-euresys-version.fact
+    dest: /etc/ansible/facts.d/fort-euresys-version.fact
+    owner: root
+    group: root
+    mode: '0755'
+  register: custom_fact_installed
+
+- name: reloads facts
+  setup:
+  when: custom_fact_installed.changed == True
+
+- name: ensures build-essential packages
+  apt:
+    name: [ 'build-essential','apt-file','dkms']
+    state: present
+
+- name: installs egrabber drivers
+  block:
+  - name: extracts sources
+    unarchive:
+      src: euresys/{{item}}
+      dest: /tmp
+    with_items:
+      - memento-linux-{{euresys_arch}}-{{euresys_memento_version}}.tar.gz
+      - egrabber-linux-{{euresys_arch}}-{{euresys_egrabber_version}}.tar.gz
+
+  - name: builds and installs modules
+    shell: |
+      cd /tmp/memento-linux-{{euresys_arch}}-{{euresys_memento_version}}
+      ./install.sh
+      cd /tmp/egrabber-linux-{{euresys_arch}}-{{euresys_egrabber_version}}
+      ./install.sh
+
+  when: ansible_local['fort-euresys-version']['memento-version'] != euresys_memento_version or ansible_local['fort-euresys-version']['egrabber-version'] != euresys_egrabber_version

@@ -1,6 +1,10 @@
 ---
 
 - hosts: vision_masters, vision_slaves
+  handlers:
+    - name: reload systemd
+      systemd:
+        daemon_reload: true
   tasks:
     - name: removes drivers
       shell: |
@@ -26,3 +30,16 @@
         - /usr/src/coaxlink-10.6.1.74
         - /usr/src/memento-10.6.0.50
         - /usr/local/src/euresys
+        - /usr/local/bin/install_euresys_modules.sh
+
+    - name: disables legacy service
+      service:
+        name: euresys_kernel_modules
+        state: stopped
+        enabled: false
+
+    - name: removes legacy service
+      file:
+        name: /etc/systemd/system/euresys_kernel_modules.service
+        state: absent
+      notify: reload systemd

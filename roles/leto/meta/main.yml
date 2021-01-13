@@ -3,5 +3,5 @@ dependencies:
   - role: custom-facts
   - role: intel-microcode
   - role: vncserver
-  - role: euresys-framegrabber
+  - role: egrabber
   - role: golang

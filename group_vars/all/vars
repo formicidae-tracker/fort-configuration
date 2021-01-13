@@ -4,13 +4,13 @@ fort_subnet: 192.168.42.0
 golang_version: 1.12.5
 debian_mirror: ftp.ch.debian.org
 zeus_version: v0.1.0
-euresys_memento_version: 10.6.0.50
-euresys_coaxlink_version: 10.6.1.74
+euresys_memento_version: 15.0.0.140
+euresys_egrabber_version: 14.0.1.167
 euresys_arch: x86_64
 artemis_version: v0.4.2
 leto_version: v0.4.1
 leto_data_dir: /data/fort-user
-coaxlink_firmware_version: 273
+coaxlink_firmware_version: 343
 olympus_stream_server: "{{vault_olympus_stream_server}}"
 slack_webhook: "{{vault_slack_webhook}}"
 basic_auth_password: "{{vault_basic_auth_password}}"

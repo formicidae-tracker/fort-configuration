@@ -1,0 +1,22 @@
+#!/bin/sh
+
+MEMENTO_DKMS=/opt/euresys/memento/drivers/dkms.conf
+EGRABBER_DKMS=/opt/euresys/egrabber/drivers/dkms.conf
+
+
+
+if [ -e $MEMENTO_DKMS ]
+then
+	MEMENTO_VERSION=$(grep PACKAGE_VERSION $MEMENTO_DKMS | cut -d = -f 2)
+else
+	MEMENTO_VERSION=""
+fi
+
+if [ -e $EGRABBER_DKMS ]
+then
+	EGRABBER_VERSION=$(grep PACKAGE_VERSION $EGRABBER_DKMS | cut -d = -f 2)
+else
+	EGRABBER_VERSION=""
+fi
+
+echo "{ \"memento-version\":\"${MEMENTO_VERSION}\", \"egrabber-version\":\"$EGRABBER_VERSION\" }"

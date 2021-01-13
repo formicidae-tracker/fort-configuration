@@ -12,13 +12,15 @@
   setup:
   when: custom_fact_installed.changed == True
 
-- name: updates firmware if needed
+- name: updates firmware
   block:
   - name: upload firmware
     shell: |
       coaxlink-firmware install {{coaxlink_firmware_variant}} --card=0
 
-  - name: reboots machine
+  # the later is needed as otherwise the new firmware is not loaded
+  # with a simple reboot.
+  - name: reboots machine with delay
     shell: |
       echo 0 > /sys/class/rtc/rtc0/wakealarm
       echo `date '+%s' -d '+4 minutes'` > /sys/class/rtc/rtc0/wakealarm

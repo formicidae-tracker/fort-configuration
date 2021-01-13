@@ -1,4 +1,4 @@
 ---
 dependencies:
   - role: custom-facts
-  - role: euresys-framegrabber
+  - role: egrabber
