@@ -11,6 +11,7 @@
 - hosts: vision_masters,vision_slaves
   roles:
     - local-ntp
+    - slack-greeter
     - vncserver
     - leto
     - data-webserver

@@ -1,0 +1,12 @@
+[Unit]
+Description=Makes this computer greet on slack when started.
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStartPre=/bin/sleep 10
+ExecStart=/usr/local/bin/greet-on-slack.sh
+
+[Install]
+WantedBy=default.target
