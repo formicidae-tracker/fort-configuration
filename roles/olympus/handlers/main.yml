@@ -1,17 +1,17 @@
 ---
 
-- name: restarts rsyslog
+- name: restart rsyslog
   systemd:
     name: rsyslog
     state: restarted
 
-- name: enables olympus service
+- name: enable olympus service
   systemd:
     name: olympus
     enabled: yes
     daemon_reload: yes
 
-- name: restarts olympus service
+- name: restart olympus service
   systemd:
     name: olympus
     state: restarted

@@ -18,7 +18,7 @@
     shell: |
       coaxlink-firmware install {{coaxlink_firmware_variant}} --card=0
 
-  - name: reboot machine
+  - name: reboots machine
     shell: |
       echo 0 > /sys/class/rtc/rtc0/wakealarm
       echo `date '+%s' -d '+4 minutes'` > /sys/class/rtc/rtc0/wakealarm

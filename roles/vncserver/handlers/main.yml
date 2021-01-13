@@ -1,6 +1,0 @@
----
-- name: updates grub
-  command: update-grub
-
-- name: reboots machine
-  reboot:

@@ -18,7 +18,7 @@
     name: vino
     state: present
 
-- name: setup vinoserver
+- name: setups vinoserver
   become_user: fort-user
   shell: |
     set -e
@@ -28,11 +28,10 @@
     eths=$(nmcli -t -f uuid,type c s --active | grep 802 | awk -F  ":" '{ print "'\''" $1 "'\''" }' | paste -s -d, -)
     gsettings set org.gnome.settings-daemon.plugins.sharing.service:/org/gnome/settings-daemon/plugins/sharing/vino-server/ enabled-connections "[ $eths ]"
 
-- name: test server is running
+- name: tests server is running
   shell: pgrep vino 1>/dev/null || echo notok
   register: vino_pid
 
 - name: reboots machine to start vino
   reboot:
   when: 'vino_pid.stdout == "notok"'
-  

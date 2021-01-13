@@ -1,5 +1,5 @@
 ---
-- name: Installs distribution nginx
+- name: installs distribution nginx
   apt:
     name: nginx
     state: present
@@ -95,7 +95,7 @@
     template:
       src: nginx.service.j2
       dest: /etc/systemd/system/nginx-rtmp.service
-    notify: enables nginx-rtmp
+    notify: enable nginx-rtmp
 
   - name: starts nginx service
     systemd:
@@ -105,7 +105,7 @@
   when:  ansible_local['fort-nginx-rtmp-version']['nginx-version'] != nginx_version or ansible_local['fort-nginx-rtmp-version']['nginx-rtmp-version'] != nginx_rtmp_version
 
 
-- name: Ensures tmpfs mount point is present
+- name: ensures tmpfs mount point is present
   file:
     path: /var/www/olympus
     state: directory
@@ -113,22 +113,22 @@
     owner: www-data
     mode: 0755
 
-- name: Ensures tmpfs folder for streaming is present
+- name: ensures tmpfs folder for streaming is present
   mount:
     path: /var/www/olympus
     fstype: tmpfs
     opts: "size={{tmpfs_size}}"
     src: tmpfs
     state: mounted
-  notify: restarts nginx-rtmp
+  notify: restart nginx-rtmp
 
-- name : Creates nodes directory
+- name : creates nodes directory
   file:
     path: /srv/nodes/{{ item | regex_replace('\.local') }}
     state: directory
   with_items: "{{ groups['vision_masters'] + groups['vision_slaves'] | unique }}"
 
-- name : Sets basic auth
+- name: sets basic auth
   htpasswd:
     path: /etc/nginx/htpasswd
     name: fort-user
@@ -136,31 +136,31 @@
     owner: root
     group: www-data
     mode: 0640
-  notify: restarts nginx
+  notify: restart nginx
 
-- name: Sets nginx-rtmp configuration
+- name: sets nginx-rtmp configuration
   template:
     src: nginx.conf.j2
     dest: /usr/local/nginx/conf/nginx.conf
-  notify: restarts nginx-rtmp
+  notify: restart nginx-rtmp
 
-- name: Sets nginx configuration
+- name: sets nginx configuration
   template:
     src: default.j2
     dest: /etc/nginx/sites-available/default
   vars:
     - nodes: "{{ groups['vision_masters'] + groups['vision_slaves'] | unique }}"
-  notify: restarts nginx
+  notify: restart nginx
 
 - name: enables default server in distribution nginx
   file:
     src: /etc/nginx/sites-available/default
     dest: /etc/nginx/sites-enabled/default
     state: link
-  notify: restarts nginx
+  notify: restart nginx
 
 - name: disables default http server in nginx-rtmp
   file:
     name: /usr/local/nginx/conf/sites-enabled/default
     state: absent
-  notify: restarts nginx-rtmp
+  notify: restart nginx-rtmp

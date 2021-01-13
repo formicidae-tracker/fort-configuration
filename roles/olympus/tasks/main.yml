@@ -62,12 +62,12 @@
   template:
     src: syslog.conf.j2
     dest: /etc/rsyslog.d/olympus.conf
-  notify: restarts rsyslog
+  notify: restart rsyslog
 
 - name: installs olympus service
   template:
     src: olympus.service.j2
     dest: /etc/systemd/system/olympus.service
   notify:
-    - enables olympus service
-    - restarts olympus service
+    - enable olympus service
+    - restart olympus service

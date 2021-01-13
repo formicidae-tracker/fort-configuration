@@ -1,10 +1,10 @@
 ---
-- name: sets default kernel
+- name: set default kernel
   shell: |
 
-- name: updates grub
+- name: update grub
   shell: |
     update-grub
 
-- name: reboots computer
+- name: reboot computer
   reboot:

@@ -1,5 +1,5 @@
 ---
-- name: restarts systemd-timesyncd service
+- name: restart systemd-timesyncd service
   service:
     name: systemd-timesyncd
     state: restarted

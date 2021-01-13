@@ -31,7 +31,7 @@
     'libfreetype6-dev',
     'google-mock',
     'ffmpeg' ]
-    state: latest
+    state: present
 
 - name: installs artemis
   block:
@@ -56,7 +56,7 @@
       rm -f /usr/local/lib/libapriltag.so.3
       rm -f /usr/local/lib/libapriltag.so.3.0.0
       ldconfig
-    notify: restarts leto service
+    notify: restart leto service
 
   when: ansible_local['fort-leto-version']['artemis-version'] != artemis_version
 
@@ -74,7 +74,7 @@
         cd /usr/local/src/leto/leto
         /usr/local/go/bin/go build
         install leto /usr/local/bin
-      notify: restarts leto service
+      notify: restart leto service
 
   when: ansible_local['fort-leto-version']['leto-version'] != leto_version
 
@@ -91,7 +91,7 @@
   template:
     src: syslog.conf.j2
     dest: /etc/rsyslog.d/leto.conf
-  notify: restarts rsyslog
+  notify: restart rsyslog
 
 - name: installs logrotate configuration
   template:
@@ -103,8 +103,8 @@
     src: leto.service.j2
     dest: /etc/systemd/system/leto.service
   notify:
-    - enables leto service
-    - restarts leto service
+    - enable leto service
+    - restart leto service
 
 - name: installs leto default configuration
   template:

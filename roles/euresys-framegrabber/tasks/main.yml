@@ -62,8 +62,8 @@
     src: euresys_kernel_modules.service
     dest: /etc/systemd/system/euresys_kernel_modules.service
   notify:
-    - installs euresys kernel modules service
-    - restarts euresys kernel modules service
+    - install euresys kernel modules service
+    - restart euresys kernel modules service
 
 - name: installs euresys drivers
   block:
