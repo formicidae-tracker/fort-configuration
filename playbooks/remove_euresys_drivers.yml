@@ -1,0 +1,28 @@
+---
+
+- hosts: vision_masters, vision_slaves
+  tasks:
+    - name: removes drivers
+      shell: |
+        set +e
+        dkms remove coaxlink/10.6.1.74 --all
+        dkms remove memento/10.6.0.50 --all
+
+        dirs="/opt/euresys/coaxlink-linux-x86_64-10.6.1.74/ /opt/euresys/memento-linux-x86_64-10.6.0.50/"
+        for d in $dirs
+        do
+          if [ -e $d ]
+          then
+            sed -i 's/confirmRemoveProduct//' %d/uninstall.sh
+            %d/uninstall.sh
+          fi
+        done
+
+    - name: removes old sources
+      file:
+        name: "{{item}}"
+        state: absent
+      with_items:
+        - /usr/src/coaxlink-10.6.1.74
+        - /usr/src/memento-10.6.0.50
+        - /usr/local/src/euresys
