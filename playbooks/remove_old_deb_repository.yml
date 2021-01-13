@@ -10,3 +10,7 @@
         repo: deb https://apt.kitware.com/ubuntu/ bionic main
         state: absent
         filename: kitware
+    - name: removes newer cmake
+      apt:
+        name: ['cmake-data', 'cmake' ]
+        state: absent
