@@ -1,5 +1,6 @@
 ---
-- hosts: all
+
+- hosts: vision_masters, vision_slaves
   handlers:
     - name: reboot machine
       reboot:
