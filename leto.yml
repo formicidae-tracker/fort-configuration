@@ -13,5 +13,5 @@
     - local-ntp
     - vncserver
     - leto
+    - data-webserver
     - coaxlink-firmware
-    - nfs-server

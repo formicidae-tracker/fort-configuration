@@ -1,0 +1,22 @@
+---
+
+- hosts: olympus
+  tasks:
+    - name: removes nfs nodes
+      mount:
+        path: /srv/nodes/{{ item | regex_replace('\.local') }}
+        fstype: nfs
+        src: "{{ item }}:{{leto_data_dir}}/fort-experiments"
+        state: absent
+      with_items: "{{ groups['vision_masters'] + groups['vision_slaves'] | unique }}"
+
+- hosts: vision_masters, vision_slaves
+  tasks:
+    - name: removes nfs server module
+      apt:
+        name: nfs-kernel-server
+        state: absent
+    - name: removes export configuration
+      file:
+        name: /etc/exports
+        state: absent
