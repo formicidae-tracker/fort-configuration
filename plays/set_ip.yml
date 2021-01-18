@@ -1,0 +1,17 @@
+---
+
+- hosts: vision_masters,vision_slaves
+  tasks:
+    - name: sets ip
+      shell: |
+        nmcli con mod Wired\ connection\ 1 ipv6.method disabled
+        nmcli con mod Wired\ connection\ 1 ipv4.method manual
+        nmcli con mod Wired\ connection\ 1 ipv4.addresses {{ ip4_addr }}
+        nmcli con mod Wired\ connection\ 1 ipv4.gateway {{ ip4_gw }}
+        nmcli con mod Wired\ connection\ 1 ipv4.dns "130.223.8.20 130.223.4.5"
+      vars:
+        ip4_addr: "{{ fort_subnet | ipmath(ip_last_value) }}/24"
+        ip4_gw: "{{ fort_subnet | ipmath(1) }}"
+
+    - name: reboots it
+      reboot:

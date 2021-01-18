@@ -1,0 +1,8 @@
+---
+
+- hosts: all
+  tasks:
+    - name: Upgrades all packages
+      apt:
+        update_cache: true
+        upgrade: safe
