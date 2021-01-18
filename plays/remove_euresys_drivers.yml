@@ -17,8 +17,8 @@
         do
           if [ -e $d ]
           then
-            sed -i 's/confirmRemoveProduct//' %d/uninstall.sh
-            %d/uninstall.sh
+            sed -i 's/confirmRemoveProduct//' $d/uninstall.sh
+            $d/uninstall.sh
           fi
         done
 
@@ -37,6 +37,7 @@
         name: euresys_kernel_modules
         state: stopped
         enabled: false
+      ignore_errors: yes
 
     - name: removes legacy service
       file:
