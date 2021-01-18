@@ -1,5 +1,10 @@
 ---
 
+- name: installs curl
+  apt:
+    name: curl
+    state: present
+
 - name: installs private script
   template:
     src: greet-on-slack.sh.j2
