@@ -51,10 +51,8 @@
   - name: builds olympus
     shell: |
       cd /home/olympus/olympus
-      /usr/local/go/bin/go build
-      cd webapp
-      yarn install
-      yarn build --prod
+      export PATH=$PATH:/usr/local/go/bin
+      make
 
   when: ansible_local['fort-olympus-version']['olympus-version'] != olympus_version
 

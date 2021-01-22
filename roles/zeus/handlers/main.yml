@@ -1,0 +1,10 @@
+---
+
+- name: restart rsyslog
+  systemd:
+    name: rsyslog
+    state: restarted
+- name: restart zeus
+  systemd:
+    name: zeus
+    state: restarted

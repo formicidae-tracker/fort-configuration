@@ -1,11 +1,10 @@
 #!/bin/bash
 
-ZEUS_DIR=/usr/local/src/zeus
+ZEUS_EXECUTABLE=/usr/local/bin/zeus
 
-if [ -d $ZEUS_DIR/.git ]
+if [ -e $ZEUS_EXECUTABLE ]
 then
-	cd $ZEUS_DIR
-	ZEUS_VERSION=$(git describe --tags 2>/dev/null)
+    ZEUS_VERSION=$($ZEUS_EXECUTABLE version 2>/dev/null || echo "")
 else
 	ZEUS_VERSION=""
 fi

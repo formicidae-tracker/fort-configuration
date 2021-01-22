@@ -1,7 +1,7 @@
 ---
 ## This playbook deploys the zeus (climate-control) stack of the FORmicidae Tracker
 
-- hosts: vision_masters
+- hosts: climate_masters
   roles:
     - local-ntp
     - slcand

@@ -1,0 +1,20 @@
+[Unit]
+Description=FORT climate control service
+Require={% for key,value in slcan_interfaces.items() %}slcand@{{key}}.service {% endfor %}
+
+After=syslog.target network-online.target {% for key,value in slcan_interfaces.items() %}slcand@{{key}}.service {% endfor %}
+
+
+[Service]
+User=fort-user
+Group=fort-user
+RestartSec=2s
+Environment=XDG_DATA_HOME={{leto_data_dir}}
+WorkingDirectory={{leto_data_dir}}
+ExecStart=/usr/local/bin/zeus serve /etc/default/zeus.yml
+StandardOutput=syslog
+StandardError=syslog
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
