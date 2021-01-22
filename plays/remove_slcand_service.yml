@@ -1,0 +1,28 @@
+---
+
+- hosts: vision_masters
+  tasks:
+    - name: get service list
+      service_facts:
+
+    - name: disables service and timers
+      block:
+        - name: disables serial-slcand@ttyS0 service
+          systemd:
+            name: serial-slcand@ttyS0.service
+            enabled: false
+            state: stopped
+        - name: stops serial-slcand@ttyS0.timer
+          systemd:
+            name: serial-slcand@ttyS0.timer
+            enabled: false
+            state: stopped
+      when: "'serial-slcand@ttyS0.service' in ansible_facts.services"
+
+    - name:
+      file:
+        name: "{{item}}"
+        state: absent
+      with_items:
+        - /etc/systemd/system/serial-slcand@ttyS0.timer
+        - /etc/systemd/system/serial-slcand@ttyS0.service

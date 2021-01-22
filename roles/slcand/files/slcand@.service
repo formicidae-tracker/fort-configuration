@@ -1,0 +1,27 @@
+#highly inspired by getty@.service 
+[Unit]
+Description=Serial slcand on %I
+BindsTo=dev-%i.device
+After=dev-%i.device systemd-user-sessions.service plymouth-quit-wait.service getty-pre.target
+After=rc-local.service network.service
+
+# If additional gettys are spawned during boot then we should make
+# sure that this is synchronized before getty.target, even though
+# getty.target didn't actually pull it in.
+Before=getty.target
+IgnoreOnIsolate=yes
+
+
+[Service]
+EnvironmentFile=/etc/default/slcand/%i.env
+ExecStart=/usr/bin/slcand -oc -S $UARTSPEED -s $CANSPEED %i $IFNAME
+ExecStartPost=/bin/sleep 0.1
+ExecStartPost=/sbin/ip link set $IFNAME up
+ExecStop=/sbin/ip link set $IFNAME down
+Type=forking
+Restart=always
+UtmpIdentifier=%I
+
+
+[Install]
+WantedBy=getty.target

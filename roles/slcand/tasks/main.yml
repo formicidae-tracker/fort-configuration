@@ -1,32 +1,30 @@
 ---
+
 - name: installs can-utils
   apt:
     name: can-utils
     state: present
 
-- name: installs serial-slcand@ttyS0
+- name: installs slcand@ service template
   copy:
-    src: serial-slcand@ttyS0.service
-    dest: /etc/systemd/system/serial-slcand@ttyS0.service
+    src: slcand@.service
+    dest: /etc/systemd/system/slcand@.service
 
-- name: installs serial-slcand@ttyS0 timer
-  copy:
-    src: serial-slcand@ttyS0.timer
-    dest: /etc/systemd/system/serial-slcand@ttyS0.timer
+- name: creates interfaces configuration directory
+  file:
+    name: /etc/default/slcand
+    state: directory
+    mode: '0755'
 
+- name: installs interfaces configurations
+  template:
+    src: device.env
+    dest: "/etc/default/slcand/{{item.key}}.env"
+  loop: "{{slcan_interfaces | dict2items }}"
 
-- name : disables serial-slcand@ttyS0
+- name: enables slcand@ services
   systemd:
-    name: serial-slcand@ttyS0.service
-    enabled: false
+    name: "slcand@{{item.key}}.service"
+    enabled: yes
     state: started
-
-- name : enables serial-slcand@ttyS0 timer
-  systemd:
-    name: serial-slcand@ttyS0.timer
-    enabled: true
-
-
-- name: reloads daemon
-  systemd:
-    daemon-reload: yes
+  loop: "{{slcan_interfaces | dict2items }}"
