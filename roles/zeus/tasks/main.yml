@@ -10,6 +10,28 @@
   setup:
   when: custom_fact_installed.changed == True
 
+- name: installs zeus service
+  template:
+    src: zeus.service.j2
+    dest: /etc/systemd/system/zeus.service
+
+- name: installs logrotate configuration
+  copy:
+    src: logrotate.conf
+    dest: /etc/logrotate.d/zeus
+
+- name: installs rsyslog handler
+  copy:
+    src: syslog.conf
+    dest: /etc/rsyslog.d/zeus.conf
+  notify: restart rsyslog
+
+- name: installs zeus config
+  template:
+    src: default-zeus.yml.j2
+    dest: /etc/default/zeus.yml
+  notify: restart zeus
+
 - name: installs zeus and utilities
   block:
   - name: ensures make is installed
@@ -28,7 +50,14 @@
     shell: |
       cd /usr/local/src/zeus
       export PATH=$PATH:/usr/local/go/bin
-      make
+      make clean all
       make install
+    notify: restart zeus
 
   when:  ansible_local['fort-zeus-version']['zeus-version'] != zeus_version
+
+- name: enables zeus
+  systemd:
+    name: zeus
+    enabled: yes
+    state: started
