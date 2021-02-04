@@ -20,9 +20,9 @@
 - name: removes backports
   apt_repository:
     repo: deb http://deb.debian.org/debian {{ ansible_distribution_release }}-backports main
-      state: absent
-      filename: backports
-      update_cache: yes
+    state: absent
+    filename: backports
+    update_cache: yes
 
 - name: installs dependencies
   apt:
@@ -35,19 +35,16 @@
     state: absent
 
 - name: installs olympus
-  become: yes
-  become_user: olympus
   block:
-
-  - name: installs nvm
-    shell: >
-        curl https://raw.githubusercontent.com/creationix/nvm/v0.37.2/install.sh | sh
-        creates=/home/{{ansible_user_id}}/.nvm/nvm.sh
-
-  - name: installs node and set version
-    shell: >
-      /bin/bash -c "source ~/.nvm/nvm.sh && nvm install 14 && nvm use --default 14
-      creates=/home/{{ansible_user_id}}/.nvm/alias
+  - name: installs nvm and node
+    args:
+      creates: "/root/.nvm/alias"
+      executable: "/bin/bash"
+    shell: |
+      curl https://raw.githubusercontent.com/creationix/nvm/v0.37.2/install.sh | sh
+      source /root/.nvm/nvm.sh
+      nvm install 14
+      nvm use --default 14
 
   - name: downloads olympus sources
     git:
@@ -57,10 +54,15 @@
       version: "{{olympus_version}}"
 
   - name: builds olympus
+    args:
+      executable: "/bin/bash"
     shell: |
       source ~/.nvm/nvm.sh
       cd /home/olympus/olympus
       export PATH=$PATH:/usr/local/go/bin
+      rm -Rf webapp/node_modules
+      npm config set user 0
+      npm config set unsafe-perm true
       make clean all
 
   when: ansible_local['fort-olympus-version']['olympus-version'] != olympus_version
