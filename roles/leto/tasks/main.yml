@@ -73,6 +73,7 @@
     - name: installs leto
       shell: |
         cd /usr/local/src/leto
+        export PATH=$PATH:/usr/local/go/bin
         make clean all
         install leto/leto /usr/local/bin
       notify: restart leto service
