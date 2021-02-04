@@ -1,0 +1,11 @@
+olympus: {{olympus_server}}
+interfaces:
+{% for key,value in slcan_interfaces.items() %}
+  {{value.ifname}}: /dev/{{key}}
+{% endfor %}
+zones:
+{% for key,value in climate_zones.items() %}
+  {{key}}:
+    can-interface: {{value.can_interface}}
+    devices-id: {{value.devices_id}}
+{% endfor %}

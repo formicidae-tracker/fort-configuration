@@ -72,9 +72,9 @@
 
     - name: installs leto
       shell: |
-        cd /usr/local/src/leto/leto
-        /usr/local/go/bin/go build
-        install leto /usr/local/bin
+        cd /usr/local/src/leto
+        make clean all
+        install leto/leto /usr/local/bin
       notify: restart leto service
 
   when: ansible_local['fort-leto-version']['leto-version'] != leto_version

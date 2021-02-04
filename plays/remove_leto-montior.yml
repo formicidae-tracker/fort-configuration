@@ -1,0 +1,22 @@
+---
+
+
+hosts: olympus
+tasks:
+  - name: uninstalls leto-monitor service
+    systemd:
+      name: leto-monitor
+      enabled: false
+      state: stopped
+    ignore_errors: yes
+
+  - name: removes service file
+    file:
+      name: "{{item}}"
+      state: absent
+    with_items:
+      - /usr/local/src/leto
+      - /usr/local/bin/leto-cli
+      - /etc/ansible/facts.d/fort-leto-cli-version.fact
+      - /usr/local/bin/leto-monitor.sh
+      - /etc/systemd/system/leto-monitor.service

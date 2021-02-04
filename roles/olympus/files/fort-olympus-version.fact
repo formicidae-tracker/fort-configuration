@@ -1,11 +1,10 @@
 #!/bin/bash
 
-OLYMPUS_DIR=/home/olympus/olympus
+OLYMPUS_EXECUTABLE=/home/olympus/olympus/olympus
 
-if [ -d $OLYMPUS_DIR/.git ]
+if [ -e $OLYMPUS_EXECUTABLE ]
 then
-	cd $OLYMPUS_DIR
-	OLYMPUS_VERSION=$(git describe --tags 2>/dev/null)
+	OLYMPUS_VERSION=$($OLYMPUS_EXECUTABLE --version 2>/dev/null || echo "")
 else
 	OLYMPUS_VERSION=""
 fi

@@ -1,0 +1,12 @@
+---
+
+slcan_interfaces:
+  ttyS0:
+    ifname: slcan0
+    uartspeed: 115200
+    canspeed: 5
+zeus_version: v0.3.1-rc3-8-g47c4879
+climate_zones:
+  box:
+    can_interface: slcan0
+    devices_id: 1
