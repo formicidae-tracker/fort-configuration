@@ -10,36 +10,41 @@
   setup:
   when: custom_fact_installed.changed == True
 
+- name: creates system user olympus
+  user:
+    name: olympus
+    system: yes
+    home: /home/olympus
+    state: present
+
+- name: removes backports
+  apt_repository:
+    repo: deb http://deb.debian.org/debian {{ ansible_distribution_release }}-backports main
+    state: absent
+    filename: backports
+    update_cache: yes
+
+- name: installs dependencies
+  apt:
+    name: git
+    state: present
+
+- name: removes system nodejs
+  apt:
+    name: nodejs
+    state: absent
+
 - name: installs olympus
   block:
-  - name: adds backports
-    apt_repository:
-      repo: deb http://deb.debian.org/debian {{ ansible_distribution_release }}-backports main
-      state: present
-      filename: backports
-      update_cache: yes
-
-  - name: installs node
-    apt:
-      name: ['nodejs', 'git']
-      default_release: "{{ansible_distribution_release}}-backports"
-      state: present
-
-  - name: installs yarn and angular cli
-    npm:
-      name: "{{ item }}"
-      state: present
-      global: yes
-    with_items:
-      - yarn
-      - "@angular/cli"
-
-  - name: creates system user olympus
-    user:
-      name: olympus
-      system: yes
-      home: /home/olympus
-      state: present
+  - name: installs nvm and node
+    args:
+      creates: "/root/.nvm/alias"
+      executable: "/bin/bash"
+    shell: |
+      curl https://raw.githubusercontent.com/creationix/nvm/v0.37.2/install.sh | sh
+      source /root/.nvm/nvm.sh
+      nvm install 14
+      nvm use --default 14
 
   - name: downloads olympus sources
     git:
@@ -49,10 +54,16 @@
       version: "{{olympus_version}}"
 
   - name: builds olympus
+    args:
+      executable: "/bin/bash"
     shell: |
+      source ~/.nvm/nvm.sh
       cd /home/olympus/olympus
       export PATH=$PATH:/usr/local/go/bin
-      make
+      rm -Rf webapp/node_modules
+      npm config set user 0
+      npm config set unsafe-perm true
+      make clean all
 
   when: ansible_local['fort-olympus-version']['olympus-version'] != olympus_version
 
@@ -67,5 +78,18 @@
     src: olympus.service.j2
     dest: /etc/systemd/system/olympus.service
   notify:
-    - enable olympus service
     - restart olympus service
+
+- name: installs olympus secrets
+  template:
+    src: olympus.env.j2
+    dest: /etc/default/olympus.env
+    mode: '0700'
+  notify:
+    - restart olympus service
+
+- name: starts olympus service
+  systemd:
+    name: olympus
+    state: started
+    enabled: true

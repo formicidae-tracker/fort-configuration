@@ -1,8 +1,0 @@
-#!/bin/sh
-# -*- mode: sh -*-
-
-
-version=$(timeout 0.5s /usr/local/bin/leto-cli version || echo "NONE")
-version=$(echo $version | cut -d " " -f 3)
-
-echo "{\"version\":\"$version\"}"

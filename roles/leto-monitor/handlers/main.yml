@@ -1,6 +1,0 @@
----
-
-- name: restart leto-monitor
-  service:
-    name: leto-monitor
-    state: restarted

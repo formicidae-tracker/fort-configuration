@@ -32,6 +32,13 @@
     dest: /etc/default/zeus.yml
   notify: restart zeus
 
+- name: installs zeus secrets
+  template:
+    src: default-zeus.env.j2
+    dest: /etc/default/zeus.env
+    mode: '0700'
+  notify: restart zeus
+
 - name: installs zeus and utilities
   block:
   - name: ensures make is installed
