@@ -19,14 +19,6 @@ server {
         auth_basic "private area";
         auth_basic_user_file "/etc/nginx/htpasswd";
 
-	    {% for node in nodes %}
-
-	    location /nodes/{{node | regex_replace('\.local')}}/ {
-	        proxy_pass http://{{node}}/;
-	    }
-
-        {% endfor %}
-
     }
 
 
@@ -34,7 +26,7 @@ server {
     location /olympus {
         # add the following, to enable CORS
         # CORS OPTIONS
-    	if ($request_method = 'OPTIONS') {
+        if ($request_method = 'OPTIONS') {
             add_header 'Access-Control-Allow-Origin' '*' always;
             add_header 'Access-Control-Allow-Headers' 'Range' always;
             add_header 'Access-Control-Allow-Methods' 'GET, HEAD, OPTIONS' always;

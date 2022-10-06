@@ -3,16 +3,9 @@
 - name: installs nginx
   apt:
     name: nginx
-    state: present
+    state: absent
 
-- name: sets nginx configuration
-  template:
-    src: nginx_default.j2
-    dest: /etc/nginx/sites-available/default
-  notify: restart nginx
-
-- name: enables and starts nginx
-  service:
-    name: nginx
-    state: started
-    enabled: true
+- name: removes nginx configuration
+  file:
+    name: /etc/nginx/site-available/default
+    state: absent
