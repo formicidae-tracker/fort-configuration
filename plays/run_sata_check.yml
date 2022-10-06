@@ -1,0 +1,22 @@
+---
+
+- hosts: vision_masters,vision_slaves
+  tasks:
+    - name: Installs smartmontools
+      apt:
+        name: smartmontools
+        state: present
+    - name: Run disk checks
+      shell: smartctl -t long /dev/sdb
+      ignore_errors: yes
+
+    - name: Pause for 220 minutes for test
+      pause:
+        minutes: 220
+
+    - name: Reports disk checks
+      shell: smartctl -a /dev/sdb
+      register: smartctl
+      ignore_errors: yes
+
+    - debug: var=smartctl.stdout_lines
