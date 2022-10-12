@@ -1,0 +1,10 @@
+---
+
+- hosts: vision_masters, vision_slaves
+  tasks:
+    - name: removes artemis source
+      shell: |
+        set +e
+        rm -Rf /usr/local/lib/libfort-hermes*
+        rm -Rf /usr/local/bin/artemis
+        rm -Rf /usr/local/src/artemis
