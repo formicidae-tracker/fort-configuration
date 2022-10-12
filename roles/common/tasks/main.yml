@@ -19,3 +19,4 @@
       - vim
       - aptitude
       - cockpit
+      - python-is-python3

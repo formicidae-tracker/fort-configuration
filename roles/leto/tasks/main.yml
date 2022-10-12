@@ -45,8 +45,9 @@
   - name: compiles artemis
     shell: |
       set -e
-      export PATH="$PATH:/usr/local/go/bin"
       cd /usr/local/src/artemis
+      rm -f /usr/local/lib/libfort-hermes*
+      export PATH=$PATH:/usr/local/go/bin
       mkdir -p build
       cd build
       rm -f CMakeCache.txt

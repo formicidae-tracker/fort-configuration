@@ -10,7 +10,6 @@
 
 - name: reloads facts
   setup:
-  when: custom_fact_installed.changed == True
 
 - name: updates firmware
   block:
