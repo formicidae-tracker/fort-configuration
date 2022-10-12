@@ -20,14 +20,13 @@
 
   - name: downloads correct golang version
     get_url:
-      url: https://dl.google.com/go/go{{golang_version}}.linux-amd64.tar.gz
+      url: https://go.dev/dl/go{{golang_version}}.linux-amd64.tar.gz
       dest: /tmp/go{{golang_version}}.linux-amd64.tar.gz
-    delegate_to: 127.0.0.1
-    run_once: true
 
   - name: unpacks golang binaries to
     unarchive:
       src: /tmp/go{{golang_version}}.linux-amd64.tar.gz
+      remote_src: yes
       dest: /usr/local
 
   - name: makes golang available to all users

@@ -12,26 +12,37 @@
   copy:
     src: daemon.conf
     dest: /etc/gdm3/custom.conf
+  register: default_user_set
 
-- name: installs vino server
+- name: reboots system
+  reboot:
+  when: default_user_set.changed
+
+- name: removes vino server
   apt:
     name: vino
+    state: absent
+
+- name: installs libsecret
+  apt:
+    name: libsecret-tools
     state: present
 
-- name: setups vinoserver
+- name: activate VNC/RDP Server
   become_user: fort-user
   shell: |
     set -e
     export DISPLAY=:0
-    gsettings set org.gnome.Vino prompt-enabled false
-    gsettings set org.gnome.Vino require-encryption false
-    eths=$(nmcli -t -f uuid,type c s --active | grep 802 | awk -F  ":" '{ print "'\''" $1 "'\''" }' | paste -s -d, -)
-    gsettings set org.gnome.settings-daemon.plugins.sharing.service:/org/gnome/settings-daemon/plugins/sharing/vino-server/ enabled-connections "[ $eths ]"
 
-- name: tests server is running
-  shell: pgrep vino 1>/dev/null || echo notok
-  register: vino_pid
+    gsettings set org.gnome.desktop.remote-desktop.rdp enable true
+    gsettings set org.gnome.desktop.remote-desktop.vnc enable true
+    gsettings set org.gnome.desktop.remote-desktop.vnc auth-method "'password'"
 
-- name: reboots machine to start vino
-  reboot:
-  when: 'vino_pid.stdout == "notok"'
+
+- name: deactivate idle lock screen
+  become_user: fort-user
+  shell: |
+    set -e
+    export DISPLAY=:0
+
+    gsettings set org.gnome.desktop.session idle-delay 0

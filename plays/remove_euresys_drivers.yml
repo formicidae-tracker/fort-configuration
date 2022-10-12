@@ -9,10 +9,10 @@
     - name: removes drivers
       shell: |
         set +e
-        dkms remove coaxlink/10.6.1.74 --all
-        dkms remove memento/10.6.0.50 --all
-
-        dirs="/opt/euresys/coaxlink-linux-x86_64-10.6.1.74/ /opt/euresys/memento-linux-x86_64-10.6.0.50/"
+        dkms remove egrabber/14.0.1.167 --all
+        dkms remove memento/15.0.0.140 --all
+        rm -Rf /usr/local/lib/libfort-hermes*
+        dirs="/opt/euresys/egrabber-linux-x86_64-14.0.1.167/ /opt/euresys/memento-linux-x86_64-15.0.0.140/"
         for d in $dirs
         do
           if [ -e $d ]
@@ -27,20 +27,7 @@
         name: "{{item}}"
         state: absent
       with_items:
-        - /usr/src/coaxlink-10.6.1.74
-        - /usr/src/memento-10.6.0.50
+        - /usr/src/egrabber-14.0.1.167
+        - /usr/src/memento-15.0.0.140
         - /usr/local/src/euresys
         - /usr/local/bin/install_euresys_modules.sh
-
-    - name: disables legacy service
-      service:
-        name: euresys_kernel_modules
-        state: stopped
-        enabled: false
-      ignore_errors: yes
-
-    - name: removes legacy service
-      file:
-        name: /etc/systemd/system/euresys_kernel_modules.service
-        state: absent
-      notify: reload systemd
