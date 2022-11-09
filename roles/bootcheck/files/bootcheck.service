@@ -1,0 +1,13 @@
+[Unit]
+
+Description=Makes this computer greet on slack when started.
+After=network-online.target postfix.service
+Wants=network-online.target postfix.service
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/default/bootcheck.env
+ExecStart=/usr/local/bin/bootcheck.sh
+
+[Install]
+WantedBy=default.target

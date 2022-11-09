@@ -1,0 +1,20 @@
+---
+
+- name: install postfix
+  apt:
+    name: postfix
+    state: latest
+
+- name: sets admins redirections
+  lineinfile:
+    path: /etc/aliases
+    regexp: '^admins: '
+    line: "admins: {{ admins_emails |  join(',') }}"
+    owner: root
+    group: root
+    mode: '0644'
+  register: new_admins_aliases
+
+- name: rebuilding aliases
+  command: newaliases
+  when: new_admins_aliases.changed

@@ -19,7 +19,7 @@
 
 - name: installs runtime dependencies
   apt:
-    name: ['ffmpeg', 'python-passlib', 'nfs-common']
+    name: ['ffmpeg', 'python3-passlib', 'nfs-common']
     state: present
 
 - name: installs nginx with rtmp module

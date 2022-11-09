@@ -1,7 +1,7 @@
 ---
 
 fort_subnet: 192.168.42.0
-golang_version: 1.12.5
+golang_version: 1.19.3
 debian_mirror: ftp.ch.debian.org
 euresys_memento_version: 15.0.0.140
 euresys_egrabber_version: 14.0.1.167
