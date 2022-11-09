@@ -1,8 +1,8 @@
 ---
 
-- name: installs curl
+- name: installs curl and mailutils
   apt:
-    name: curl
+    name: ['curl','mailutils']
     state: present
 
 - name: installs private script

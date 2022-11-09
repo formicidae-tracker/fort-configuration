@@ -4,3 +4,4 @@ nginx_version: 1.23.2
 nginx_rtmp_version: 1.2.2
 olympus_version: v0.4.0
 tmpfs_size: 512m
+admins_emails: ['alexandre.tuleu@unil.ch']
