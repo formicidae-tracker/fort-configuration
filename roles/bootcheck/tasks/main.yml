@@ -1,0 +1,52 @@
+---
+
+- name: installs curl and mailutils
+  apt:
+    name: [ 'curl' , 'mailutils' ]
+    state: present
+
+- name: installs private script
+  copy:
+    src: bootcheck.sh
+    dest: /usr/local/bin/bootcheck.sh
+    mode: 0755
+    owner: root
+    group: root
+
+- name: installs secrets
+  template:
+    src: environment.j2
+    dest: /etc/default/bootcheck.env
+    mode: 0600
+    owner: root
+    group: root
+
+- name: installs service
+  copy:
+    src: bootcheck.service
+    dest: /etc/systemd/system/bootcheck.service
+    owner: root
+    group: root
+
+- name: enables service
+  service:
+    name: bootcheck
+    enabled: true
+
+- name: check if legacy service is installed
+  stat: path=/etc/systemd/system/greet-on-slack.service
+  register: legacy_service_installed
+
+- name: disables legacy service
+  service:
+    name: greet-on-slack
+    enabled: false
+  when: legacy_service_installed.stat.exists
+
+- name: removes legacy service files
+  file:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - /etc/systemd/system/greet-on-slack.service
+    - /usr/local/bin/greet-on-slack.sh

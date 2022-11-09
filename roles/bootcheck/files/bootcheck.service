@@ -6,7 +6,8 @@ Wants=network-online.target postfix.service
 
 [Service]
 Type=oneshot
-ExecStart=/usr/local/bin/greet-on-slack.sh
+EnvironmentFile=/etc/default/bootcheck.env
+ExecStart=/usr/local/bin/bootcheck.sh
 
 [Install]
 WantedBy=default.target
