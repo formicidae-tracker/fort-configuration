@@ -3,8 +3,5 @@
 # This sensible variables must be set for these repository's playbook
 # to work.
 
-vault_olympus_server:
-vault_olympus_stream_server:
-vault_slack_api_token:
-vault_slack_webhook:
-vault_basic_auth_password:
+vault_olympus_server: castle-black.local
+vault_olympus_stream_server: castle-black.local

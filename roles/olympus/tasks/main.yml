@@ -1,1 +1,55 @@
 ---
+- name: ensure working directory exists
+  file:
+    name: /usr/local/src/olympus
+    state: directory
+    mode: 0755
+
+- name: installs nginx configuration file
+  template:
+    src: nginx.conf.j2
+    dest: /usr/local/src/olympus/nginx.conf
+  notify:
+    - rebuild olympus
+    - restart olympus
+
+- name: installs otherfile configuration file
+  copy:
+    src: "{{ item }}"
+    dest: /usr/local/src/olympus/
+    mode: 0644
+  with_items:
+    - Dockerfile.rtmp
+    - Dockerfile.nginx
+    - nginx-rtmp.conf
+  notify:
+    - rebuild olympus
+    - restart olympus
+
+- name: installs docker-compose file
+  template:
+    src: docker-compose.yml.j2
+    dest: /usr/local/src/olympus/docker-compose.yml
+  notify:
+    - rebuild olympus
+    - restart olympus
+
+- name: installs syslog handles
+  template:
+    src: syslog.conf.j2
+    dest: /etc/rsyslog.d/olympus.conf
+  notify: restart rsyslog
+
+- name: install service file
+  template:
+    src: olympus.service.j2
+    dest: /etc/systemd/system/olympus.service
+    mode: 0644
+  notify:
+    - reload systemctl
+    - restart olympus
+
+- name: enables olympus
+  systemd:
+    name: olympus
+    enabled: yes

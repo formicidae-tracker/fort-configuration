@@ -5,13 +5,16 @@
     name: rsyslog
     state: restarted
 
-- name: enable olympus service
-  systemd:
-    name: olympus
-    enabled: yes
-    daemon_reload: yes
+- name: rebuild olympus
+  command:
+    chdir: /usr/local/src/olympus
+    cmd: docker compose build --pull
 
-- name: restart olympus service
+- name: reload systemctl
+  systemd:
+    daemon-reload: true
+
+- name: restart olympus
   systemd:
     name: olympus
     state: restarted

@@ -1,16 +1,13 @@
 [Unit]
-Description=Olympus: Displays al Lot of gods
+Description=Olympus: Displays a Lot of gods
 After=syslog.target
 After=network.target
 
 [Service]
 RestartSec=2s
-WorkingDirectory=/home/olympus/olympus
-ExecStart=/home/olympus/olympus/olympus
-EnvironmentFile=/etc/default/olympus.env
-StandardOutput=syslog
-StandardError=syslog
-SyslogIdentifier=olympus
+WorkingDirectory=/usr/local/src/olympus
+ExecStart=/usr/bin/docker compose up --remove-orphans -d
+ExecStop=/usr/bin/docker compose down
 Restart=always
 
 [Install]

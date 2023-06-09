@@ -1,0 +1,49 @@
+server {
+       listen 80;
+       listen [::]:80;
+
+       server_name {{olympus_fqdn}};
+
+        location /olympus {
+        # add the following, to enable CORS
+        # CORS OPTIONS
+        if ($request_method = 'OPTIONS') {
+            add_header 'Access-Control-Allow-Origin' '*' always;
+            add_header 'Access-Control-Allow-Headers' 'Range' always;
+            add_header 'Access-Control-Allow-Methods' 'GET, HEAD, OPTIONS' always;
+            add_header 'Content-Length' 0;
+            return 204;
+        }
+
+        # CORS HEAD
+        if ($request_method = 'HEAD') {
+            add_header 'Access-Control-Allow-Origin' '*' always;
+            add_header 'Access-Control-Expose-Headers' 'Content-Length' always;
+        }
+
+        # CORS GET
+        if ($request_method = 'GET') {
+            add_header 'Access-Control-Allow-Origin' '*' always;
+            add_header 'Access-Control-Expose-Headers' 'Content-Length, Content-Range' always;
+        }
+
+
+        types {
+            application/vnd.apple.mpegurl m3u8;
+            video/mp2t ts;
+            image/png png;
+        }
+
+        root /srv;
+        add_header Cache-Control no-cache;
+    }
+
+    location / {
+        gzip on;
+        gzip_types text/css text/javascript application/json;
+        gzip_min_length 1024; #1 KiB
+        gzip_proxied any;
+
+        proxy_pass http://olympus:3000/;
+    }
+}

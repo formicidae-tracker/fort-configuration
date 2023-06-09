@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  olympus:
+    image: formicidaetracker/olympus:{{ olympus_version }}
+    ports:
+      - "{{ fort_subnet | ansible.utils.ipmath(1) }}:3001:3001"
+
+  rtmp:
+    build:
+      context: .
+      dockerfile: Dockerfile.rtmp
+    ports:
+      - "{{ fort_subnet | ansible.utils.ipmath(1) }}:1935:1935"
+    volumes:
+      - srv-data:/srv
+
+
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - srv-data:/srv
+
+volumes:
+  srv-data:
