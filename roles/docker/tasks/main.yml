@@ -1,0 +1,37 @@
+---
+- name: ensures legacy apt package are not present
+  apt:
+    name:
+      - docker.io
+      - docker-compose
+      - docker-doc
+      - podman-docker
+    state: absent
+
+- name: installs docker repos
+  block:
+    - name: creates /etc/apt/keyrings
+      file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: 0755
+
+    - name: download.docker.com | no apt key
+      ansible.builtin.get_url:
+        url: https://download.docker.com/linux/debian/gpg
+        dest: /etc/apt/keyrings/docker.asc
+
+    - name: download.docker.com | apt source
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian {{ ansible_distribution_release }} stable"
+        state: present
+
+- name: installs docker
+  apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    state: present
