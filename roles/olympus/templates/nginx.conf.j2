@@ -1,3 +1,9 @@
+upstream backend {
+         server olympus:3000 max_fails=2 fail_timeout=5s;
+         keepalive 16;
+}
+
+
 server {
        listen 80;
        listen [::]:80;
@@ -44,6 +50,12 @@ server {
         gzip_min_length 1024; #1 KiB
         gzip_proxied any;
 
-        proxy_pass http://olympus:3000/;
+        proxy_buffers 16 16k;
+        proxy_buffer_size 4k;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+
+        proxy_pass http://backend/;
+
     }
 }

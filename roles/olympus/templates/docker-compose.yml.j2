@@ -7,6 +7,10 @@ services:
     ports:
       - "{{ fort_subnet | ansible.utils.ipmath(1) }}:3001:3001"
     restart: always
+    environment:
+      - OLYMPUS_DATA_HOME=/data/olympus
+    volumes:
+      - olympus-data:/data/olympus
 
   rtmp:
     build:
@@ -41,3 +45,4 @@ services:
 
 volumes:
   srv-data:
+  olympus-data:
