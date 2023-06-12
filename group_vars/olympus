@@ -1,6 +1,6 @@
 ---
 
-olympus_version: latest
-olympus_fqdn: localhost
+olympus_version: master
+olympus_fqdn: fortdev.tuleu.science
 tmpfs_size: 512m
 admins_emails: ['alexandre.tuleu@unil.ch']

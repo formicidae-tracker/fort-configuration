@@ -2,29 +2,42 @@ version: "3.9"
 
 services:
   olympus:
-    image: formicidaetracker/olympus:{{ olympus_version }}
+    image: ghcr.io/formicidae-tracker/olympus:{{ olympus_version }}
+    container_name: olympus-olympus
     ports:
       - "{{ fort_subnet | ansible.utils.ipmath(1) }}:3001:3001"
+    restart: always
 
   rtmp:
     build:
       context: .
       dockerfile: Dockerfile.rtmp
+    container_name: olympus-rtmp
     ports:
       - "{{ fort_subnet | ansible.utils.ipmath(1) }}:1935:1935"
     volumes:
       - srv-data:/srv
+    restart: always
 
 
   nginx:
     build:
       context: .
       dockerfile: Dockerfile.nginx
+    container_name: olympus-nginx
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - srv-data:/srv
+    restart: always
+
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 1800 olympus-olympus
 
 volumes:
   srv-data:

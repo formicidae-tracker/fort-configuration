@@ -1,20 +1,11 @@
 ---
 
-- name: restart rsyslog
-  systemd:
-    name: rsyslog
-    state: restarted
-
 - name: rebuild olympus
   command:
     chdir: /usr/local/src/olympus
     cmd: docker compose build --pull
 
-- name: reload systemctl
-  systemd:
-    daemon-reload: true
-
 - name: restart olympus
-  systemd:
-    name: olympus
-    state: restarted
+  command:
+    chdir: /usr/local/src/olympus
+    cmd: docker compose up -d --remove-orphans
