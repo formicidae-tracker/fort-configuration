@@ -13,16 +13,16 @@
 
 - name: updates firmware
   block:
-  - name: upload firmware
-    shell: |
-      coaxlink-firmware install {{coaxlink_firmware_variant}} --card=0
+    - name: upload firmware
+      shell: |
+        coaxlink-firmware install {{coaxlink_firmware_variant}} --card=0
 
-  # the later is needed as otherwise the new firmware is not loaded
-  # with a simple reboot.
-  - name: reboots machine with delay
-    shell: |
-      echo 0 > /sys/class/rtc/rtc0/wakealarm
-      echo `date '+%s' -d '+4 minutes'` > /sys/class/rtc/rtc0/wakealarm
-      shutdown +1 "Euresys firmware update"
+    # the later is needed as otherwise the new firmware is not loaded
+    # with a simple reboot.
+    - name: reboots machine with delay
+      shell: |
+        echo 0 > /sys/class/rtc/rtc0/wakealarm
+        echo `date '+%s' -d '+4 minutes'` > /sys/class/rtc/rtc0/wakealarm
+        shutdown +1 "Euresys firmware update"
 
   when: ansible_local['fort-coaxlink-firmware']['firmware-version'] != coaxlink_firmware_version or ansible_local['fort-coaxlink-firmware']['firmware-variant'] != coaxlink_firmware_variant

@@ -68,13 +68,19 @@
       git:
         name: https://github.com/formicidae-tracker/leto.git
         dest: /usr/local/src/leto
+        refspec: dev/next
         version: "{{ leto_version }}"
         force: yes
 
     - name: installs leto
       shell: |
         cd /usr/local/src/leto
-        export PATH=$PATH:/usr/local/go/bin
+        export PATH=/root/go/bin:$PATH:/usr/local/go/bin
+
+        go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28
+        go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
+        go install github.com/golang/mock/mockgen@v1.6.0
+
         make clean all
         install leto/leto /usr/local/bin
       notify: restart leto service

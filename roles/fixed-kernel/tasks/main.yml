@@ -6,21 +6,29 @@
     owner: root
     mode: '0755'
 
-- name: installs wanted kernel
+- name: removes old fixed kernel
+  file:
+    name: /etc/default/grub.d/fixed-kernel.cfg
+    state: absent
+
+- name: ensure use saved grub entry
+  lineinfile:
+    path: /etc/default/grub
+    regexp: "^GRUB_DEFAULT="
+    line: "GRUB_DEFAULT=saved"
+  notify: update grub
+
+- name: sets default kernel boot
   shell: |
-    set -e
-    /usr/local/bin/ubuntu-mainline-kernel.sh -l | grep {{ target_linux_kernel }} 1>/dev/null && exit 0
+    if grub-editenv list | grep "saved_entry=Advanced options for Ubuntu>Ubuntu, with Linux {{ target_linux_kernel }}" 1>/dev/null
+    then
+        exit 0
+    fi
 
-    /usr/local/bin/ubuntu-mainline-kernel.sh -i {{ target_linux_kernel }} --yes 1>/dev/null
-
+    subentry=$(grep menuentry /boot/grub/grub.cfg | grep {{ target_linux_kernel }} | head -n 1 | cut -d "'" -f 2)
+    grub-set-default "Advanced options for Ubuntu>$subentry" 1>/dev/null
     update-grub 1>/dev/null
 
-    MENU_ID=$(grep submenu /boot/grub/grub.cfg  | cut -d "'" -f 4)
-    SUBMENU_ID=$(grep {{ target_linux_kernel }} /boot/grub/grub.cfg  | head -n 1 | cut -d "'" -f 4)
-
-    echo "GRUB_DEFAULT=\"$MENU_ID>$SUBMENU_ID\"" > /etc/default/grub.d/fixed-kernel.cfg
-
-    update-grub 1>/dev/null
     echo "kernel_installed"
   register: kernel_installation
 

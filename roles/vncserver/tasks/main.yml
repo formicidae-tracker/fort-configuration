@@ -3,10 +3,12 @@
   shell: |
     if id -u fort-user > /dev/null
     then
-    	exit 0
+        exit 0
     fi
     echo -ne "123456\n123456\nDefault user for the FORmicidae Tracker\n\n\n\n\n" | adduser fort-user
     echo "fort-user:123456" | /usr/sbin/chpasswd
+  args:
+    creates: /home/fort-user/.bashrc
 
 - name: sets user as default logged in user
   copy:

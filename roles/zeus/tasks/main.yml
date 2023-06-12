@@ -32,12 +32,10 @@
     dest: /etc/default/zeus.yml
   notify: restart zeus
 
-- name: installs zeus secrets
-  template:
-    src: default-zeus.env.j2
-    dest: /etc/default/zeus.env
-    mode: '0700'
-  notify: restart zeus
+- name: removes zeus secrets
+  file:
+    name: /etc/default/zeus.env
+    state: absent
 
 - name: installs zeus and utilities
   block:
@@ -51,12 +49,17 @@
       repo: 'https://github.com/formicidae-tracker/zeus.git'
       dest: /usr/local/src/zeus
       force: yes
+      refspec: dev/next
       version: "{{zeus_version}}"
 
   - name: builds zeus
     shell: |
       cd /usr/local/src/zeus
-      export PATH=$PATH:/usr/local/go/bin
+      export PATH=/root/go/bin:$PATH:/usr/local/go/bin
+
+      go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28
+      go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
+
       make clean all
       make install
     notify: restart zeus

@@ -23,23 +23,6 @@ function last_shutdown_was_graceful() {
 	fi
 }
 
-function post_to_slack() {
-	if [ -z $SLACK_URL ]
-	then
-		return 0
-	fi
-	local MESSAGE=":warning: *$HOSTNAME* started after non-graceful shutdown."
-
-	if [ $1 == "graceful" ]
-	then
-		MESSAGE=":spock-hand: *$HOSTNAME* started."
-	fi
-	/usr/bin/curl -X POST \
-				  -H 'Content-type: application/json' \
-				  --data "{\"text\":\"$MESSAGE\"}" \
-				  $SLACK_URL 2>/dev/null 1>/dev/null
-}
-
 function mail_to_admin() {
 	local BOOT_LOGS=$1
 	if [ -z "$BOOT_LOGS" ]
@@ -69,4 +52,3 @@ fi
 echo "NON-GRACEFUL SHUTDOWN DETECTED"
 
 mail_to_admin "$BOOT_LOGS"
-post_to_slack "non-graceful"

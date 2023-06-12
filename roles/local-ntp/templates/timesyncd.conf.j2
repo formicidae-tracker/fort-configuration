@@ -12,5 +12,5 @@
 # See timesyncd.conf(5) for details.
 
 [Time]
-NTP= {{ fort_subnet | ipmath(1) }}
+NTP= {{ fort_subnet | ansible.utils.ipmath(1) }}
 FallbackNTP=0.debian.pool.ntp.org 1.debian.pool.ntp.org 2.debian.pool.ntp.org 3.debian.pool.ntp.org

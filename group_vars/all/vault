@@ -5,3 +5,4 @@
 
 vault_olympus_server: castle-black.local
 vault_olympus_stream_server: castle-black.local
+admins_emails: ['alexandre.tuleu@unil.ch']
