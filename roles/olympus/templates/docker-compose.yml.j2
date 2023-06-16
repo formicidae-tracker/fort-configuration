@@ -9,6 +9,9 @@ services:
     restart: always
     environment:
       - OLYMPUS_DATA_HOME=/data/olympus
+    env_files:
+      - .secret.env
+      - .vapid.env
     volumes:
       - olympus-data:/data/olympus
 

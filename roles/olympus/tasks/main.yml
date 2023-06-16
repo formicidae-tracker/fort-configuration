@@ -5,15 +5,34 @@
     state: directory
     mode: 0755
 
-- name: installs nginx configuration file
+- name: installs templated configuration file
   template:
-    src: nginx.conf.j2
-    dest: /usr/local/src/olympus/nginx.conf
+    src: "{{ item }}"
+    dest: /usr/local/src/olympus/
+    mode: 0644
+  with_items:
+    - docker-compose.yml.j2
+    - nginx.conf.j2
   notify:
     - rebuild olympus
     - restart olympus
 
-- name: installs otherfile configuration file
+- name: generates VAPID keys
+  shell: |
+    docker run --pull always ghcr.io/formicidae-tracker/olympus:{{ olympus_version }} --generate-vapid-keys >> /usr/local/src/olympus/.vapid.env
+    chmod 0600 /usr/local/src/olympus/.vapid.env
+  args:
+    creates: /usr/local/src/olympus/.vapid.env
+
+- name: generates secret
+  shell: |
+    docker run --pull always ghcr.io/formicidae-tracker/olympus:{{ olympus_version }} --generate-secret >> /usr/local/src/olympus/.secret.env
+    chmod 0600 /usr/local/src/olympus/.secret.env
+  args:
+    creates: /usr/local/src/olympus/.secret.env
+
+
+- name: installs static configuration file
   copy:
     src: "{{ item }}"
     dest: /usr/local/src/olympus/
@@ -22,14 +41,6 @@
     - Dockerfile.rtmp
     - Dockerfile.nginx
     - nginx-rtmp.conf
-  notify:
-    - rebuild olympus
-    - restart olympus
-
-- name: installs docker-compose file
-  template:
-    src: docker-compose.yml.j2
-    dest: /usr/local/src/olympus/docker-compose.yml
   notify:
     - rebuild olympus
     - restart olympus
