@@ -7,19 +7,19 @@
 
 - name: installs templated configuration file
   template:
-    src: "{{ item }}"
-    dest: /usr/local/src/olympus/
+    src: "{{ item }}.j2"
+    dest: "/usr/local/src/olympus/{{ item }}"
     mode: 0644
   with_items:
-    - docker-compose.yml.j2
-    - nginx.conf.j2
+    - docker-compose.yml
   notify:
     - rebuild olympus
     - restart olympus
 
 - name: generates VAPID keys
   shell: |
-    docker run --pull always ghcr.io/formicidae-tracker/olympus:{{ olympus_version }} --generate-vapid-keys >> /usr/local/src/olympus/.vapid.env
+    docker run --pull always ghcr.io/formicidae-tracker/olympus:{{ olympus_version }} --generate-vapid-keys > /usr/local/src/olympus/.vapid.env
+    echo OLYMPUS_PUSH_SUBSCRIBER="{{ admins_emails[0] }}" >> /usr/local/src/olympus/.vapid.env
     chmod 0600 /usr/local/src/olympus/.vapid.env
   args:
     creates: /usr/local/src/olympus/.vapid.env
@@ -39,7 +39,6 @@
     mode: 0644
   with_items:
     - Dockerfile.rtmp
-    - Dockerfile.nginx
     - nginx-rtmp.conf
   notify:
     - rebuild olympus

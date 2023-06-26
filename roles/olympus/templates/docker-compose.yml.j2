@@ -9,14 +9,17 @@ services:
       # only local tracking computers to connect to. There are no gRPC
       # credential set up.
       - "{{ fort_subnet | ansible.utils.ipmath(1) }}:3001:3001"
-    restart: always
+    restart: unless-stopped
     environment:
       - OLYMPUS_DATA_HOME=/data/olympus
-    env_files:
+    env_file:
       - .secret.env
       - .vapid.env
     volumes:
       - olympus-data:/data/olympus
+    labels:
+      - traefik.http.routers.olympus.rule=PathPrefix("/api")
+      - traefik.http.services.olympus.loadbalancer.server.port=3000
 
   rtmp:
     build:
@@ -30,27 +33,41 @@ services:
       - "{{ fort_subnet | ansible.utils.ipmath(1) }}:1935:1935"
     volumes:
       - srv-data:/srv
-    restart: always
+    restart: unless-stopped
+    labels:
+      - traefik.http.routers.rtmp.rule=PathPrefix("/olympus")
+      - traefik.http.services.rtmp.loadbalancer.server.port=80
 
+  webapp:
+    image: ghcr.io/formicidae-tracker/olympus-frontend:{{ olympus_version }}
+    container_name: olympus-webapp
+    restart: unless-stopped
+    labels:
+      - traefik.http.routers.webapp.rule=PathPrefix("/")
+      - traefik.http.services.webapp.loadbalancer.server.port=80
 
-  nginx:
-    build:
-      context: .
-      dockerfile: Dockerfile.nginx
-    container_name: olympus-nginx
+  traefik:
+    image: traefik:latest
+    container_name: olympus-trafik
+    command:
+      - --entrypoints.web.address=:80
+      - --api.insecure=true
+      - --providers.docker
     ports:
       - "80:80"
-      - "443:443"
+      # Only local subnet is able to access the traefik console !!
+      - "{{ fort_subnet | ansible.utils.ipmath(1)}}:8080:8080"
+    restart: unless-stopped
     volumes:
-      - srv-data:/srv
-    restart: always
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
 
   watchtower:
     image: containrrr/watchtower
     container_name: watchtower
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    command: --interval 1800 olympus-olympus
+    command: --interval 1800 olympus-olympus olympus-webapp
 
 volumes:
   srv-data:
