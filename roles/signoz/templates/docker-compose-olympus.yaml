@@ -41,59 +41,25 @@ services:
     hostname: zookeeper-1
     user: root
     ports:
-      - "{{ fort_subnet | ansible.utils.ipmath(1) }}:2181:2181"
-      - "{{ fort_subnet | ansible.utils.ipmath(1) }}:2888:2888"
-      - "{{ fort_subnet | ansible.utils.ipmath(1) }}:3888:3888"
+      - "2181:2181"
+      - "2888:2888"
+      - "3888:3888"
     volumes:
       - ./data/zookeeper-1:/bitnami/zookeeper
     environment:
       - ZOO_SERVER_ID=1
-      # - ZOO_SERVERS=0.0.0.0:2888:3888,zookeeper-2:2888:3888,zookeeper-3:2888:3888
       - ALLOW_ANONYMOUS_LOGIN=yes
       - ZOO_AUTOPURGE_INTERVAL=1
 
-  # zookeeper-2:
-  #   image: bitnami/zookeeper:3.7.0
-  #   container_name: zookeeper-2
-  #   hostname: zookeeper-2
-  #   user: root
-  #   ports:
-  #     - "2182:2181"
-  #     - "2889:2888"
-  #     - "3889:3888"
-  #   volumes:
-  #     - ./data/zookeeper-2:/bitnami/zookeeper
-  #   environment:
-  #     - ZOO_SERVER_ID=2
-  #     - ZOO_SERVERS=zookeeper-1:2888:3888,0.0.0.0:2888:3888,zookeeper-3:2888:3888
-  #     - ALLOW_ANONYMOUS_LOGIN=yes
-  #     - ZOO_AUTOPURGE_INTERVAL=1
-
-  # zookeeper-3:
-  #   image: bitnami/zookeeper:3.7.0
-  #   container_name: zookeeper-3
-  #   hostname: zookeeper-3
-  #   user: root
-  #   ports:
-  #     - "2183:2181"
-  #     - "2890:2888"
-  #     - "3890:3888"
-  #   volumes:
-  #     - ./data/zookeeper-3:/bitnami/zookeeper
-  #   environment:
-  #     - ZOO_SERVER_ID=3
-  #     - ZOO_SERVERS=zookeeper-1:2888:3888,zookeeper-2:2888:3888,0.0.0.0:2888:3888
-  #     - ALLOW_ANONYMOUS_LOGIN=yes
-  #     - ZOO_AUTOPURGE_INTERVAL=1
 
   clickhouse:
     <<: *clickhouse-defaults
     container_name: clickhouse
     hostname: clickhouse
     ports:
-      - "{{ fort_subnet | ansible.utils.ipmath(1) }}:9000:9000"
-      - "{{ fort_subnet | ansible.utils.ipmath(1) }}:8123:8123"
-      - "{{ fort_subnet | ansible.utils.ipmath(1) }}:9181:9181"
+      - "9000:9000"
+      - "8123:8123"
+      - "9181:9181"
     volumes:
       - ./clickhouse-config.xml:/etc/clickhouse-server/config.xml
       - ./clickhouse-users.xml:/etc/clickhouse-server/users.xml
@@ -103,40 +69,6 @@ services:
       - ./data/clickhouse/:/var/lib/clickhouse/
       - ./user_scripts:/var/lib/clickhouse/user_scripts/
 
-  # clickhouse-2:
-  #   <<: *clickhouse-defaults
-  #   container_name: clickhouse-2
-  #   hostname: clickhouse-2
-  #   ports:
-  #     - "9001:9000"
-  #     - "8124:8123"
-  #     - "9182:9181"
-  #   volumes:
-  #     - ./clickhouse-config.xml:/etc/clickhouse-server/config.xml
-  #     - ./clickhouse-users.xml:/etc/clickhouse-server/users.xml
-  #     - ./custom-function.xml:/etc/clickhouse-server/custom-function.xml
-  #     - ./clickhouse-cluster.xml:/etc/clickhouse-server/config.d/cluster.xml
-  #     # - ./clickhouse-storage.xml:/etc/clickhouse-server/config.d/storage.xml
-  #     - ./data/clickhouse-2/:/var/lib/clickhouse/
-  #     - ./user_scripts:/var/lib/clickhouse/user_scripts/
-
-
-  # clickhouse-3:
-  #   <<: *clickhouse-defaults
-  #   container_name: clickhouse-3
-  #   hostname: clickhouse-3
-  #   ports:
-  #     - "9002:9000"
-  #     - "8125:8123"
-  #     - "9183:9181"
-  #   volumes:
-  #     - ./clickhouse-config.xml:/etc/clickhouse-server/config.xml
-  #     - ./clickhouse-users.xml:/etc/clickhouse-server/users.xml
-  #     - ./custom-function.xml:/etc/clickhouse-server/custom-function.xml
-  #     - ./clickhouse-cluster.xml:/etc/clickhouse-server/config.d/cluster.xml
-  #     # - ./clickhouse-storage.xml:/etc/clickhouse-server/config.d/storage.xml
-  #     - ./data/clickhouse-3/:/var/lib/clickhouse/
-  #     - ./user_scripts:/var/lib/clickhouse/user_scripts/
 
   alertmanager:
     image: signoz/alertmanager:${ALERTMANAGER_TAG:-0.23.1}

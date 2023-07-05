@@ -30,16 +30,3 @@
     chmod 0600 /usr/local/src/olympus/.secret.env
   args:
     creates: /usr/local/src/olympus/.secret.env
-
-
-- name: installs static configuration file
-  copy:
-    src: "{{ item }}"
-    dest: /usr/local/src/olympus/
-    mode: 0644
-  with_items:
-    - Dockerfile.rtmp
-    - nginx-rtmp.conf
-  notify:
-    - rebuild olympus
-    - restart olympus

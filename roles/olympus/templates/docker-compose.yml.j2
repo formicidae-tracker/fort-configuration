@@ -1,7 +1,9 @@
+# -*- mode: yaml -*-
 version: "3.9"
 
 services:
   olympus:
+    hostname: {{ vault_olympus_server | replace(".local","") }}
     image: ghcr.io/formicidae-tracker/olympus:{{ olympus_version }}
     container_name: olympus-olympus
     ports:
@@ -10,11 +12,16 @@ services:
       # credential set up.
       - "{{ fort_subnet | ansible.utils.ipmath(1) }}:3001:3001"
     restart: unless-stopped
+    extra_hosts:
+      - "signoz:{{ fort_subnet | ansible.utils.ipmath(1)}}"
     environment:
       - OLYMPUS_DATA_HOME=/data/olympus
+      - OLYMPUS_OTEL_ENDPOINT=signoz:4317
     env_file:
       - .secret.env
       - .vapid.env
+    command:
+      - run
     volumes:
       - olympus-data:/data/olympus
     labels:
@@ -22,9 +29,7 @@ services:
       - traefik.http.services.olympus.loadbalancer.server.port=3000
 
   rtmp:
-    build:
-      context: .
-      dockerfile: Dockerfile.rtmp
+    image: ghcr.io/formicidae-tracker/olympus-rtmp:{{ olympus_version }}
     container_name: olympus-rtmp
     ports:
       # it is primordial that this RTMP port stay private to allow
@@ -36,7 +41,15 @@ services:
     restart: unless-stopped
     labels:
       - traefik.http.routers.rtmp.rule=PathPrefix("/olympus")
-      - traefik.http.services.rtmp.loadbalancer.server.port=80
+      - traefik.http.services.rtmp.loadbalancer.server.port=8888
+
+  thumbnails:
+    image: caddy:latest
+    volumes:
+      - srv-data:/usr/share/caddy
+    labels:
+      - traefik.http.routers.thumbnails.rule=PathPrefix("/thumbnails/olympus/")
+      - traefik.http.services.thumbnails.loadbalancer.server.port=80
 
   webapp:
     image: ghcr.io/formicidae-tracker/olympus-frontend:{{ olympus_version }}
@@ -47,12 +60,22 @@ services:
       - traefik.http.services.webapp.loadbalancer.server.port=80
 
   traefik:
-    image: traefik:latest
+    image: traefik:v3.0.0-beta3
     container_name: olympus-trafik
+    extra_hosts:
+      - "signoz:{{ fort_subnet | ansible.utils.ipmath(1)}}"
     command:
       - --entrypoints.web.address=:80
-      - --api.insecure=true
       - --providers.docker
+      - --metrics.openTelemetry=true
+      - --metrics.openTelemetry.address=signoz:4317
+      - --metrics.openTelemetry.insecure=true
+      - --metrics.openTelemetry.grpc=true
+      - --tracing.openTelemetry=true
+      - --tracing.openTelemetry.address=signoz:4317
+      - --tracing.openTelemetry.insecure=true
+      - --tracing.openTelemetry.grpc=true
+
     ports:
       - "80:80"
       # Only local subnet is able to access the traefik console !!
@@ -61,13 +84,12 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
-
   watchtower:
     image: containrrr/watchtower
     container_name: watchtower
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    command: --interval 1800 olympus-olympus olympus-webapp
+    command: --interval 1800 olympus-olympus olympus-webapp olympus-rtmp
 
 volumes:
   srv-data:
