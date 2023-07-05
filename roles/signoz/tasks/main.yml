@@ -1,0 +1,18 @@
+---
+- name: fetches signoz sources
+  git:
+    name: https://github.com/SigNoz/signoz.git
+    dest: /usr/local/src/signoz
+    version: "{{signoz_version}}"
+    force: yes
+  notify: restart signoz
+
+- name: modify signoz configuration
+  template:
+    src: "{{ item }}"
+    dest: "/usr/local/src/signoz/deploy/docker/clickhouse-setup/{{ item }}"
+    mode: 0644
+  with_items:
+    - otel-collector-config-olympus.yaml
+    - docker-compose-olympus.yaml
+  notify: restart signoz
