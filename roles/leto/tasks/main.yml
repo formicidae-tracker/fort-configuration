@@ -82,7 +82,7 @@
         go install github.com/golang/mock/mockgen@v1.6.0
 
         make clean all
-        install leto/leto /usr/local/bin
+        install cmd/leto/leto /usr/local/bin
       notify: restart leto service
 
   when: ansible_local['fort-leto-version']['leto-version'] != leto_version

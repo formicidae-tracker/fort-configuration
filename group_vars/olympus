@@ -1,5 +1,5 @@
 ---
 
-olympus_version: master
+olympus_version: v0.5
 olympus_fqdn: fortdev.tuleu.science
 tmpfs_size: 512m

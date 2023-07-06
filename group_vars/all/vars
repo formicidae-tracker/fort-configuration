@@ -7,11 +7,10 @@ euresys_memento_version: 15.0.0.140
 euresys_egrabber_version: 14.0.1.167
 euresys_arch: x86_64
 artemis_version: v0.4.5
-leto_version: 296e277880c768c9e5dcbffe33966aaf9761a063
+leto_version: v0.5.0
 leto_data_dir: /data/fort-user
 coaxlink_firmware_version: 343
 olympus_server: "{{vault_olympus_server}}:3001"
 olympus_stream_server: "{{vault_olympus_stream_server}}"
-basic_auth_password: "{{vault_basic_auth_password}}"
 target_linux_kernel: 5.15.48
 signoz_version: v0.21.0

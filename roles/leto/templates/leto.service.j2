@@ -8,6 +8,7 @@ Group=fort-user
 RestartSec=2s
 Environment="DISPLAY=:0"
 Environment=XDG_DATA_HOME={{leto_data_dir}}
+Environment=LETO_OTEL_ENDPOINT={{ fort_subnet | ansible.utils.ipmath(1) }}
 Environment=EURESYS_COAXLINK_GENTL64_CTI=/opt/euresys/egrabber/lib/x86_64/coaxlink.cti
 WorkingDirectory=/data/fort-user
 ExecStart=/usr/local/bin/leto
