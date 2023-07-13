@@ -1,6 +1,8 @@
 ---
 
 - name: restart signoz
-  command:
+  shell: |
+    docker compose -f docker-compose-olympus.yaml pull
+    docker compose -f docker-compose-olympus.yaml up -d
+  args:
     chdir: /usr/local/src/signoz/deploy/docker/clickhouse-setup
-    cmd: docker compose -f docker-compose-olympus.yaml up -d
