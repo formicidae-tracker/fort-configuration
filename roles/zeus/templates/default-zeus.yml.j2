@@ -9,3 +9,4 @@ zones:
     can-interface: {{value.can_interface}}
     devices-id: {{value.devices_id}}
 {% endfor %}
+otel_collector_endpoint: {{fort_subnet | ansible.utils.ipmath(1)}}:4317

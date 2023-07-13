@@ -5,7 +5,6 @@ slcan_interfaces:
     ifname: slcan0
     uartspeed: 115200
     canspeed: 5
-zeus_version: c0ef02edc13591f3232dd6c5e065c05f810abf5a
 climate_zones:
   box:
     can_interface: slcan0
