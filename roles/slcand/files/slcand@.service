@@ -1,8 +1,8 @@
-#highly inspired by getty@.service 
+#highly inspired by getty@.service
 [Unit]
 Description=Serial slcand on %I
 BindsTo=dev-%i.device
-After=dev-%i.device systemd-user-sessions.service plymouth-quit-wait.service getty-pre.target
+After=dev-%i.device systemd-user-sessions.service getty-pre.target
 After=rc-local.service network.service
 
 # If additional gettys are spawned during boot then we should make
