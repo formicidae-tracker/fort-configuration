@@ -8,6 +8,29 @@
     echo -ne "123456\n123456\nDefault user for the FORmicidae Tracker\n\n\n\n\n" | adduser fort-user
     echo "fort-user:123456" | /usr/sbin/chpasswd
 
+- name: adds default monitor
+  when: need_virtual_monitor
+  block:
+    - name: ensures custom gnome-shell@wayland
+      copy:
+        dest: /etc/systemd/user/org.gnome.Shell@wayland.service
+        force: false
+        remote_src: true
+        src: /usr/lib/systemd/user/org.gnome.Shell@wayland.service
+        owner: root
+        mode: 0644
+    - name: ensures custom gnome-shell@wayland has virtual monitor
+      lineinfile:
+        path: /etc/systemd/user/org.gnome.Shell@wayland.service
+        regexp: '^ExecStart=/usr/bin/gnome-shell'
+        line: ExecStart=/usr/bin/gnome-shell' --virtual-monitor 1920x1080
+      register: virtual_monitor_needed
+
+    - name: reboots system to enable monitor
+      when: virtual_monitor_needed.changed
+      reboot:
+
+
 - name: sets user as default logged in user
   copy:
     src: daemon.conf
