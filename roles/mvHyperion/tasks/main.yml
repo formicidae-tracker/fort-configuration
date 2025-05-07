@@ -1,1 +1,24 @@
 ---
+
+- name: install custom facts
+  file:
+    src: fort-check-hyperion.fact
+    dest: /etc/ansible/facts.d/fort-check-hyperion.fact
+    mode: 0755
+  register: custom_fact_installed
+
+- name: reloads facts
+  setup:
+  when: custom_fact_installed.changed
+
+- name: Downloads mvHyperion custom sources
+  git:
+    repo: https://github.com/formicidae-tracker/mvHyperion
+    dest: /usr/local/src/mvHyperion
+    version: main
+  register: checked_out
+
+- name: Compiles and install kernel modules
+  shell: |
+    make -C /usr/local/src/mvHyperion all install
+  when: checked_out.changed or ansible_local['fort-check-hyperion']['hyperion'] == False

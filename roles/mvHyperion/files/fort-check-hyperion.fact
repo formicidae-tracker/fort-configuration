@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [ lsmod | grep hyperion ]
+then
+	echo "{\"hyperion\":true}"
+else
+	echo "{\"hyperion\":false}"
+fi
