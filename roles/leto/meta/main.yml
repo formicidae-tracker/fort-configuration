@@ -2,6 +2,11 @@
 dependencies:
   - role: custom-facts
   - role: intel-microcode
-  - role: egrabber
   - role: vncserver
   - role: golang
+  - role: egrabber
+    when: use_egrabber
+  - role: coaxlink-firmware
+    when: use_egrabber
+  - role: mvHyperion
+    when: use_mvHyperion

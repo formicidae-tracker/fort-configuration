@@ -12,7 +12,4 @@
   roles:
     - local-ntp
     - bootcheck
-    - fixed-kernel
     - leto
-    - data-webserver
-    - coaxlink-firmware
