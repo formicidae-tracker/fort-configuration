@@ -1,24 +1,87 @@
 ---
-- name: removes vino server
-  apt:
-    name: vino
-    state: absent
+- name: setup RDP server if needed
+  block:
+    - name: check RDP server is reachable
+      wait_for:
+        port: 3390
+        timeout: 5
+  rescue:
+    - name: installs certtool
+      apt:
+        name: gnutls-bin
+        state: absent
 
-- name: installs libsecret
-  apt:
-    name: libsecret-tools
-    state: present
+    - name: ensure certificate directory
+      file:
+        path: /home/fort-user/.local/share/gnome-remote-desktop/certificates
+        state: directory
+        owner: fort-user
+        group: fort-user
+        mode: 0755
 
-- name: activate VNC/RDP Server
-  become_user: fort-user
-  shell: |
-    set -e
-    export DISPLAY=:0
+    - name: generate private key
+      community.crypto.openssl_privatekey:
+        path: /home/fort-user/.local/share/gnome-remote-desktop/certificates/tls.key
+        group: fort-user
+        owner: fort-user
 
-    gsettings set org.gnome.desktop.remote-desktop.rdp enable true
-    gsettings set org.gnome.desktop.remote-desktop.vnc enable true
-    gsettings set org.gnome.desktop.remote-desktop.vnc auth-method "'password'"
+    - name: Create certificate signing request (CSR) for self-signed certificate
+      community.crypto.openssl_csr:
+        privatekey_path: /home/fort-user/.local/share/gnome-remote-desktop/certificates/tls.key
+        path: /home/fort-user/.local/share/gnome-remote-desktop/certificates/tls.csr
+        common_name: formicidae-tracker
+        country_name: CH
+        digest: sha384
 
+    - name: Create self-signed certificate from CSR
+      community.crypto.x509_certificate:
+        path: /home/fort-user/.local/share/gnome-remote-desktop/certificates/tls.crt
+        csr_path: /home/fort-user/.local/share/gnome-remote-desktop/certificates/tls.csr
+        privatekey_path: /home/fort-user/.local/share/gnome-remote-desktop/certificates/tls.key
+        provider: selfsigned
+        owner: fort-user
+        group: fort-user
+
+    - name: setups RDP
+      become_user: fort-user
+      shell: |
+        set -e
+        export DISPLAY=:0
+        export XDG_RUNTIME_DIR=/run/user/$(id -u fort-user)
+        [ -f ~/.local/share/keyring/RDP.keyring] || cat > ~/.local/share/keyrings/RDP.keyring <<EOF
+        [keyring]
+        display-name=RDP
+        ctime=$(date +%s)
+        mtime=0
+        lock-on-idle=false
+        lock-after=false
+        EOF
+
+        mv ~/.local/share/keyrings/login.keyring ~/.local/share/keyrings/login.bak
+        mv ~/.local/share/keyrings/RDP.keyring ~/.local/share/keyrings/login.keyring
+
+        echo -n "" | gnome-keyring-daemon --replace --unlock
+
+        grdctl rdp set-credentials fort-user 123456
+
+        mv ~/.local/share/keyrings/login.keyring ~/.local/share/keyrings/RDP.keyring
+        mv ~/.local/share/keyrings/login.bak ~/.local/share/keyrings/login.keyring
+
+        gnome-keyring-daemon --replace
+
+        grdctl rdp set-tls-cert ~/.local/share/gnome-remote-desktop/certificates/tls.crt
+        grdctl rdp set-tls-key ~/.local/share/gnome-remote-desktop/certificates/tls.key
+        grdctl rdp disable-view-only
+        grdctl rdp set-port 3390
+        grdctl rdp enable
+
+    - name: enables remote assistance
+      become_user: fort-user
+      systemd:
+        name: gnome-remote-desktop.service
+        enabled: true
+        state: restarted
+        scope: user
 
 - name: deactivate idle lock screen
   become_user: fort-user
