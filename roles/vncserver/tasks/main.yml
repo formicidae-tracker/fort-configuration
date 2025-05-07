@@ -1,23 +1,4 @@
 ---
-- name: adds default user
-  shell: |
-    if id -u fort-user > /dev/null
-    then
-    	exit 0
-    fi
-    echo -ne "123456\n123456\nDefault user for the FORmicidae Tracker\n\n\n\n\n" | adduser fort-user
-    echo "fort-user:123456" | /usr/sbin/chpasswd
-
-- name: sets user as default logged in user
-  copy:
-    src: daemon.conf
-    dest: /etc/gdm3/custom.conf
-  register: default_user_set
-
-- name: reboots system
-  reboot:
-  when: default_user_set.changed
-
 - name: removes vino server
   apt:
     name: vino
