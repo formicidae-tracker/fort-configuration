@@ -1,0 +1,12 @@
+#!/bin/bash
+
+users=$(getent passwd {1000..1100} | cut -d ":" -f 1)
+
+echo -n "["
+sep=""
+for u in $users
+do
+	echo -n "$sep\"$u\""
+	sep=","
+done
+echo "]"

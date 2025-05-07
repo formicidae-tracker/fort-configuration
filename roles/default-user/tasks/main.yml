@@ -1,4 +1,15 @@
 ---
+- name: installs custom fact
+  copy:
+    src: fort-list-users.fact
+    dest: /etc/ansible/facts.d/fort-list-users.fact
+    mode: 0755
+  register: custom_fact_installed
+
+- name: reloads facts
+  setup:
+  when: custom_fact_installed.changed
+
 - name: adds default user
   shell: |
     if id -u fort-user > /dev/null
@@ -7,6 +18,8 @@
     fi
     echo -ne "123456\n123456\nDefault user for the FORmicidae Tracker\n\n\n\n\n" | adduser fort-user
     echo "fort-user:123456" | /usr/sbin/chpasswd
+  when: '"fort-user" not in ansible_local["fort-list-users"]'
+
 
 - name: adds default monitor
   when: need_virtual_monitor
@@ -23,20 +36,13 @@
       lineinfile:
         path: /etc/systemd/user/org.gnome.Shell@wayland.service
         regexp: '^ExecStart=/usr/bin/gnome-shell'
-        line: ExecStart=/usr/bin/gnome-shell' --virtual-monitor 1920x1080
-      register: virtual_monitor_needed
+        line: ExecStart=/usr/bin/gnome-shell --virtual-monitor 1920x1080
+      notify: reboots system
 
-    - name: reboots system to enable monitor
-      when: virtual_monitor_needed.changed
-      reboot:
 
 
 - name: sets user as default logged in user
   copy:
     src: daemon.conf
     dest: /etc/gdm3/custom.conf
-  register: default_user_set
-
-- name: reboots system
-  reboot:
-  when: default_user_set.changed
+  notify: reboots system

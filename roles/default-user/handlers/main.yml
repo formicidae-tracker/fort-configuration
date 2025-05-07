@@ -1,0 +1,4 @@
+---
+
+- name: reboots system
+  reboot:
