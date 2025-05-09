@@ -1,0 +1,124 @@
+From 78f7189d6c86699d453a6f592442439c5a2492a9 Mon Sep 17 00:00:00 2001
+From: Alexandre Tuleu <alexandre.tuleu.2005@polytechnique.org>
+Date: Fri, 25 Oct 2024 18:44:24 +0200
+Subject: [PATCH] Makes apps compile with newer C++ and wxWidget
+
+---
+ apps/mvDeviceConfigure/Makefile.inc | 2 +-
+ apps/mvPropView/DevCtrl.cpp         | 3 ++-
+ apps/mvPropView/PropViewFrame.cpp   | 5 +++--
+ apps/mvPropView/SpinEditorDouble.h  | 2 ++
+ common/STLHelper.h                  | 6 +++---
+ 5 files changed, 11 insertions(+), 7 deletions(-)
+
+diff --git a/apps/mvDeviceConfigure/Makefile.inc b/apps/mvDeviceConfigure/Makefile.inc
+index 3c3fc05..668221f 100644
+--- a/apps/mvDeviceConfigure/Makefile.inc
++++ b/apps/mvDeviceConfigure/Makefile.inc
+@@ -48,7 +48,7 @@ LOC_LIB_PATH=$(WORK)/lib/$(TARGET)
+ # 'WX_CONF_TOOL' will be set in Makefile.samp.inc
+ #-------------------------------------------
+ WXRELEASE=$(shell $(WX_CONF_TOOL) --release)
+-WXLIBFLAGS=$(shell $(WX_CONF_TOOL) --libs)
++WXLIBFLAGS=$(shell $(WX_CONF_TOOL) --libs std webview)
+ WXCXXFLAGS=$(shell $(WX_CONF_TOOL) --cxxflags)
+ 
+ #-------------------------------------------
+diff --git a/apps/mvPropView/DevCtrl.cpp b/apps/mvPropView/DevCtrl.cpp
+index 61f5f55..12f7add 100644
+--- a/apps/mvPropView/DevCtrl.cpp
++++ b/apps/mvPropView/DevCtrl.cpp
+@@ -4,6 +4,7 @@
+ #include <common/STLHelper.h>
+ #include "DevCtrl.h"
+ #include "GlobalDataStorage.h"
++#include "wx/propgrid/propgridpagestate.h"
+ #include <algorithm>
+ #include <functional>
+ 
+@@ -686,7 +687,7 @@ void DevicePropertyHandler::GetActiveDevicePropTreeExpansionData( wxPropertyGrid
+         {
+             selectedGridProperty = pProp->GetName();
+         }
+-        wxPropertyGridConstIterator it = pPropGrid->GetIterator( wxPG_ITERATE_ALL );
++        wxPropertyGridConstIterator it = ((const wxPropertyGrid *)pPropGrid)->GetIterator( wxPG_ITERATE_ALL );
+         while( !it.AtEnd() )
+         {
+             if( ( *it )->IsExpanded() )
+diff --git a/apps/mvPropView/PropViewFrame.cpp b/apps/mvPropView/PropViewFrame.cpp
+index 9836394..f0f9d41 100644
+--- a/apps/mvPropView/PropViewFrame.cpp
++++ b/apps/mvPropView/PropViewFrame.cpp
+@@ -31,6 +31,7 @@
+ #include "WizardQuickSetup.h"
+ #include "WizardSaturation.h"
+ #include "WizardSequencerControl.h"
++#include "wx/propgrid/propgrid.h"
+ #include "wxPropView.icon.xpm"
+ 
+ #include <apps/Common/wxIncludePrologue.h>
+@@ -3420,7 +3421,7 @@ void PropViewFrame::OnBtnSelectPropertyConnectedWithCurrentIssue( wxCommandEvent
+     wxPropertyGrid* pPropGrid = GetPropertyGrid();
+     if( pPropGrid && !endOfPropName.IsEmpty() )
+     {
+-        wxPropertyGridConstIterator it = pPropGrid->GetIterator();
++        wxPropertyGridConstIterator it = ((const wxPropertyGrid*)pPropGrid)->GetIterator();
+         while( !it.AtEnd() )
+         {
+             if( ( *it )->GetName().EndsWith( endOfPropName ) )
+@@ -4128,7 +4129,7 @@ void PropViewFrame::OnHelp_FindFeature( wxCommandEvent& )
+     if( pPropGrid )
+     {
+         NameToFeatureMap name2feature;
+-        wxPropertyGridConstIterator it = pPropGrid->GetIterator();
++        wxPropertyGridConstIterator it = ((const wxPropertyGrid*)pPropGrid)->GetIterator();
+         while( !it.AtEnd() )
+         {
+             name2feature.insert( make_pair( ( *it )->GetName(), static_cast<PropData*>( ( *it )->GetClientData() ) ) );
+diff --git a/apps/mvPropView/SpinEditorDouble.h b/apps/mvPropView/SpinEditorDouble.h
+index 65a29b2..35dacc6 100644
+--- a/apps/mvPropView/SpinEditorDouble.h
++++ b/apps/mvPropView/SpinEditorDouble.h
+@@ -7,6 +7,8 @@
+ #if wxMAJOR_VERSION < 3
+ #   error "You need at least Version 3.0.0 of wxWidgets to compile this application"
+ #endif // #if wxMAJOR_VERSION < 3
++
++#include "wx/propgrid/editors.h"
+ #include <wx/propgrid/propgrid.h>
+ #include <apps/Common/wxIncludeEpilogue.h>
+ 
+diff --git a/common/STLHelper.h b/common/STLHelper.h
+index d2c6095..fccbb4e 100644
+--- a/common/STLHelper.h
++++ b/common/STLHelper.h
+@@ -67,7 +67,7 @@ void DeleteSecond( std::pair<_Ty1, _Ty2>& data )
+ 
+ //-----------------------------------------------------------------------------
+ template<class _Ty1, class _Ty2>
+-class ContainsFirst : public std::unary_function<std::pair<_Ty1, _Ty2>, bool>
++class ContainsFirst /*: public std::unary_function<std::pair<_Ty1, _Ty2>, bool>*/
+ //-----------------------------------------------------------------------------
+ {
+     std::map<_Ty1, _Ty2> m_;
+@@ -81,7 +81,7 @@ public:
+ 
+ //-----------------------------------------------------------------------------
+ template<class _Ty1, class _Ty2>
+-class FirstMatches : public std::unary_function<std::pair<_Ty1, _Ty2>, bool>
++class FirstMatches /*: public std::unary_function<std::pair<_Ty1, _Ty2>, bool>*/
+ //-----------------------------------------------------------------------------
+ {
+     std::pair<_Ty1, _Ty2> value_;
+@@ -97,7 +97,7 @@ public:
+ 
+ //-----------------------------------------------------------------------------
+ template<class _Ty1, class _Ty2>
+-class SecondMatches : public std::unary_function<std::pair<_Ty1, _Ty2>, bool>
++class SecondMatches /* : public std::unary_function<std::pair<_Ty1, _Ty2>, bool>*/
+ //-----------------------------------------------------------------------------
+ {
+     std::pair<_Ty1, _Ty2> value_;
+--
+libgit2 1.7.2
+

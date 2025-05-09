@@ -1,7 +1,7 @@
 ---
 
 - name: install custom facts
-  file:
+  copy:
     src: fort-check-hyperion.fact
     dest: /etc/ansible/facts.d/fort-check-hyperion.fact
     mode: 0755
@@ -11,7 +11,45 @@
   setup:
   when: custom_fact_installed.changed
 
-- name: Downloads mvHyperion custom sources
+- name: Ensures destination directory exists
+  file:
+    path: /usr/local/src/mvIMPACT
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Install custom installation script
+  copy:
+    src: install_mvHYPERION.sh
+    dest: /usr/local/src/mvIMPACT/install_mvHYPERION.sh
+    mode: 0755
+
+- name: Install updated sources for driver
+  copy:
+    src: mvHYPERION-x86_64_ABI2-2.47.3.tgz
+    dest: /usr/local/src/mvIMPACT/mvHYPERION-x86_64_ABI2-2.47.3.tgz
+    mode: 0755
+
+- name: Installs hyperion userland required packages
+  apt:
+    name:
+      - libexpat1-dev
+      - build-essential
+      - libwxgtk-webview3.2-dev
+      - libwxgtk3.2-dev
+      - wx3.2-headers
+      - libgtk2.0-dev
+      - libfltk1.3-dev
+
+- name: Runs installation
+  shell: |
+    cd /usr/local/src/mvIMPACT
+
+    ./install_mvHYPERION.sh -u
+  when: ansible_local['fort-check-hyperion']['hyperion-libraries'] == False
+
+- name: Downloads mvHyperion kernel custom sources
   git:
     repo: https://github.com/formicidae-tracker/mvHyperion
     dest: /usr/local/src/mvHyperion
@@ -20,5 +58,7 @@
 
 - name: Compiles and install kernel modules
   shell: |
+    set -x
+
     make -C /usr/local/src/mvHyperion all install
-  when: checked_out.changed or ansible_local['fort-check-hyperion']['hyperion'] == False
+  when: checked_out.changed or ansible_local['fort-check-hyperion']['hyperion-kernel'] == False

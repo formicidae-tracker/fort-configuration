@@ -1,8 +1,15 @@
 #!/bin/bash
 
-if [ lsmod | grep hyperion ]
+if [ -f /lib/modules/$(uname -r)/updates/hyperion2.ko ]
 then
-	echo "{\"hyperion\":true}"
+	echo "{\"hyperion-kernel\":true,"
 else
-	echo "{\"hyperion\":false}"
+	echo "{\"hyperion-kernel\":false,"
+fi
+
+if [ -f /opt/mvIMPACT_Acquire/lib/x86_64/libmvHYPERIONfg.so ]
+then
+	echo "\"hyperion-libraries\":true}"
+else
+	echo "\"hyperion-libraries\":false}"
 fi
