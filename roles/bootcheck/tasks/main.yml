@@ -13,13 +13,10 @@
     owner: root
     group: root
 
-- name: installs secrets
-  template:
-    src: environment.j2
-    dest: /etc/default/bootcheck.env
-    mode: 0600
-    owner: root
-    group: root
+- name: removes previous secrets
+  file:
+    name: /etc/default/bootcheck.env
+    state: absent
 
 - name: installs service
   copy:

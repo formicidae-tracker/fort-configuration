@@ -9,7 +9,6 @@ After=syslog.target network-online.target {% for key,value in slcan_interfaces.i
 User=fort-user
 Group=fort-user
 RestartSec=2s
-EnvironmentFile=/etc/default/zeus.env
 Environment=XDG_DATA_HOME={{leto_data_dir}}
 WorkingDirectory={{leto_data_dir}}
 ExecStart=/usr/local/bin/zeus serve /etc/default/zeus.yml

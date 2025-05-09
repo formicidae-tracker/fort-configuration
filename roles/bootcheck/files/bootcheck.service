@@ -6,7 +6,6 @@ Wants=network-online.target postfix.service
 
 [Service]
 Type=oneshot
-EnvironmentFile=/etc/default/bootcheck.env
 ExecStart=/usr/local/bin/bootcheck.sh
 
 [Install]

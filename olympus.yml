@@ -3,6 +3,4 @@
 - hosts: olympus
   roles:
     - ntp-server
-    - golang
-    - streamserver
     - olympus

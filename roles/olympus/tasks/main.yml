@@ -1,95 +1,32 @@
 ---
-- name: installs custom fact
-  copy:
-    src: fort-olympus-version.fact
-    dest: /etc/ansible/facts.d/fort-olympus-version.fact
-    mode: '0755'
-  register: custom_fact_installed
+- name: ensure working directory exists
+  file:
+    name: /usr/local/src/olympus
+    state: directory
+    mode: 0755
 
-- name: reloads facts
-  setup:
-  when: custom_fact_installed.changed == True
-
-- name: creates system user olympus
-  user:
-    name: olympus
-    system: yes
-    home: /home/olympus
-    state: present
-
-- name: removes backports
-  apt_repository:
-    repo: deb http://deb.debian.org/debian {{ ansible_distribution_release }}-backports main
-    state: absent
-    filename: backports
-    update_cache: yes
-
-- name: installs dependencies
-  apt:
-    name: git
-    state: present
-
-- name: removes system nodejs
-  apt:
-    name: nodejs
-    state: absent
-
-- name: installs olympus
-  block:
-  - name: installs nvm and node
-    args:
-      creates: "/root/.nvm/alias"
-      executable: "/bin/bash"
-    shell: |
-      curl https://raw.githubusercontent.com/creationix/nvm/v0.37.2/install.sh | sh
-      source /root/.nvm/nvm.sh
-      nvm install 14
-      nvm use --default 14
-
-  - name: downloads olympus sources
-    git:
-      repo: 'https://github.com/formicidae-tracker/olympus.git'
-      dest: /home/olympus/olympus
-      force: yes
-      version: "{{olympus_version}}"
-
-  - name: builds olympus
-    args:
-      executable: "/bin/bash"
-    shell: |
-      source ~/.nvm/nvm.sh
-      cd /home/olympus/olympus
-      export PATH=$PATH:/usr/local/go/bin
-      rm -Rf webapp/node_modules
-      npm config set user 0
-      npm config set unsafe-perm true
-      make clean all
-
-  when: ansible_local['fort-olympus-version']['olympus-version'] != olympus_version
-
-- name: installs rsyslog handler
+- name: installs templated configuration file
   template:
-    src: syslog.conf.j2
-    dest: /etc/rsyslog.d/olympus.conf
-  notify: restart rsyslog
-
-- name: installs olympus service
-  template:
-    src: olympus.service.j2
-    dest: /etc/systemd/system/olympus.service
+    src: "{{ item }}.j2"
+    dest: "/usr/local/src/olympus/{{ item }}"
+    mode: 0644
+  with_items:
+    - docker-compose.yml
   notify:
-    - restart olympus service
+    - rebuild olympus
+    - restart olympus
 
-- name: installs olympus secrets
-  template:
-    src: olympus.env.j2
-    dest: /etc/default/olympus.env
-    mode: '0700'
-  notify:
-    - restart olympus service
+- name: generates VAPID keys
+  shell: |
+    docker run --pull always ghcr.io/formicidae-tracker/olympus:{{ olympus_version }} --generate-vapid-keys > /usr/local/src/olympus/.vapid.env
+    echo OLYMPUS_PUSH_SUBSCRIBER="{{ admins_emails[0] }}" >> /usr/local/src/olympus/.vapid.env
+    chmod 0600 /usr/local/src/olympus/.vapid.env
+  args:
+    creates: /usr/local/src/olympus/.vapid.env
 
-- name: starts olympus service
-  systemd:
-    name: olympus
-    state: started
-    enabled: true
+- name: generates secret
+  shell: |
+    docker run --pull always ghcr.io/formicidae-tracker/olympus:{{ olympus_version }} --generate-secret >> /usr/local/src/olympus/.secret.env
+    chmod 0600 /usr/local/src/olympus/.secret.env
+  args:
+    creates: /usr/local/src/olympus/.secret.env
