@@ -1,0 +1,50 @@
+---
+
+- name: install artemis requirements
+  apt:
+    name:
+      - git
+      - git-lfs
+      - cmake
+      - libprotobuf-dev
+      - protobuf-compiler
+      - libgoogle-glog-dev
+      - libopencv-dev
+      - libopencv-imgproc-dev
+      - libopencv-highgui-dev
+      - libboost-system-dev
+      - libglfw3-dev
+      - libglew-dev
+      - libasio-dev
+      - libboost-dev
+      - libeigen3-dev
+      - libfontconfig1-dev
+      - libfreetype6-dev
+
+
+- name: downloads artemis sources
+  git:
+    name: https://github.com/formicidae-tracker/artemis.git
+    dest: /usr/local/src/artemis
+    version: "{{artemis_version}}"
+
+- name: compiles artemis
+  shell: |
+    set -e
+
+    cd /usr/local/src/artemis
+    rm -f /usr/local/lib/libfort-hermes*
+    export PATH=$PATH:/usr/local/go/bin
+    mkdir -p build
+    cd build
+    rm -f CMakeCache.txt
+    cmake ../ -DCMAKE_BUILD_TYPE=Release {% if use_egrabber %} -DEURESYS_FRAMEGRABBER_SUPPORT=On {% endif %} {% if use_mvHyperion %} -DHYPERION_FRAMEGRABBER_SUPPORT=On {% endif %}
+
+    make -j 12
+    make install
+
+    rm -f /usr/local/lib/libapriltag.so
+    rm -f /usr/local/lib/libapriltag.so.3
+    rm -f /usr/local/lib/libapriltag.so.3.0.0
+
+    ldconfig

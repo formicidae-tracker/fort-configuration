@@ -1,0 +1,42 @@
+
+---
+
+- name: installs leto runtime dependencies
+  apt:
+    name:
+      - ffmpeg
+    state: present
+  notify: restart leto service
+
+
+- name: ensures data dir is existing
+  file:
+    name: "{{leto_data_dir}}"
+    state: directory
+    mode: '0755'
+    owner: fort-user
+    group: fort-user
+
+- name: installs rsyslog handler
+  template:
+    src: syslog.conf.j2
+    dest: /etc/rsyslog.d/leto.conf
+  notify: restart rsyslog
+
+- name: installs logrotate configuration
+  template:
+    src: logrotate.conf.j2
+    dest: /etc/logrotate.d/leto
+
+- name: installs leto default configuration
+  template:
+    src: leto.yml.j2
+    dest: /etc/default/leto.yml
+
+- name: installs leto service
+  template:
+    src: leto.service.j2
+    dest: /etc/systemd/system/leto.service
+  notify:
+    - enable leto service
+    - restart leto service
