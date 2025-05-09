@@ -4,6 +4,7 @@
   git:
     name: https://github.com/formicidae-tracker/leto.git
     dest: /usr/local/src/leto
+    force: yes
     version: "{{ leto_version }}"
 
 - name: installs leto

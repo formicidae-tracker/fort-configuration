@@ -62,3 +62,12 @@
 
     make -C /usr/local/src/mvHyperion all install
   when: checked_out.changed or ansible_local['fort-check-hyperion']['hyperion-kernel'] == False
+
+- name: disable IOMMU
+  lineinfile:
+    path: /etc/default/grub
+    regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="((?:(?!intel_iommu=off).)*?)"$'
+    line: 'GRUB_CMDLINE_LINUX_DEFAULT="\1 intel_iommu=off"'
+    backup: true
+    backrefs: true
+  notify: update-grub
