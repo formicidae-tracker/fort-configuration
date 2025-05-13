@@ -10,15 +10,19 @@ services:
       # credential set up.
       - "{{ olympus_ip_address }}:3001:3001"
     restart: unless-stopped
+
     {% if enable_telemetry %}
     extra_hosts:
       - "signoz:{{ olympus_ip_address}}"
     {% endif %}
+
     environment:
       - OLYMPUS_DATA_HOME=/data/olympus
+
     {% if enable_telemetry %}
       - OLYMPUS_OTEL_ENDPOINT=signoz:4317
     {% endif %}
+
     env_file:
       - .secret.env
       - .vapid.env
