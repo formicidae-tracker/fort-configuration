@@ -1,5 +1,4 @@
 ---
 
-olympus_ip_address: 192.168.44.11
 olympus_has_dhcp_server: false
 tmpfs_size: 512m

@@ -9,4 +9,6 @@ zones:
     can-interface: {{value.can_interface}}
     devices-id: {{value.devices_id}}
 {% endfor %}
+{% if enable_telemetry %}
 otel_collector_endpoint: {{ olympus_ip_address }}:4317
+{% endif %}

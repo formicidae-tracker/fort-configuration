@@ -41,6 +41,14 @@
 
 
 
+- name: ensure data directory exists
+  file:
+    path: /data/fort-user
+    state: directory
+    owner: fort-user
+    group: fort-user
+    mode: 0755
+
 - name: sets user as default logged in user
   copy:
     src: daemon.conf
