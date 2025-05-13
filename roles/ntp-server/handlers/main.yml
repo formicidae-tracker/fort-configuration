@@ -2,3 +2,4 @@
   service:
     name: isc-dhcp-server
     state: restarted
+  when: olympus_has_dhcp_server == True

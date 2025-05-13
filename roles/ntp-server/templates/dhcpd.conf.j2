@@ -11,5 +11,5 @@ authoritative;
 subnet {{ fort_subnet }} netmask 255.255.255.0 {
     range {{ fort_subnet | ansible.utils.ipmath(100) }} {{ fort_subnet | ansible.utils.ipmath(200) }};
     option routers {{ fort_subnet | ansible.utils.ipmath(1) }};
-    option ntp-servers {{ fort_subnet | ansible.utils.ipmath(1) }};
+    option ntp-servers {{ olympus_ip_address }};
 }

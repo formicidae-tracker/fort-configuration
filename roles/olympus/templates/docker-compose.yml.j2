@@ -1,19 +1,17 @@
 # -*- mode: yaml -*-
-version: "3.9"
-
 services:
   olympus:
-    hostname: {{ vault_olympus_server | replace(".local","") }}
+    hostname: {{ vault_olympus_server | replace(".local","") | replace(".lan","") }}
     image: ghcr.io/formicidae-tracker/olympus:{{ olympus_version }}
     container_name: olympus-olympus
     ports:
       # it is primordial that this gRPC port stay private to allow
       # only local tracking computers to connect to. There are no gRPC
       # credential set up.
-      - "{{ fort_subnet | ansible.utils.ipmath(1) }}:3001:3001"
+      - "{{ olympus_ip_address }}:3001:3001"
     restart: unless-stopped
     extra_hosts:
-      - "signoz:{{ fort_subnet | ansible.utils.ipmath(1)}}"
+      - "signoz:{{ olympus_ip_address}}"
     environment:
       - OLYMPUS_DATA_HOME=/data/olympus
       - OLYMPUS_OTEL_ENDPOINT=signoz:4317
@@ -35,7 +33,7 @@ services:
       # it is primordial that this RTMP port stay private to allow
       # only local tracking computers to connect to to stream. The
       # RTMP server accepts any connection to stream.
-      - "{{ fort_subnet | ansible.utils.ipmath(1) }}:1935:1935"
+      - "{{ olympus_ip_address }}:1935:1935"
     volumes:
       - srv-data:/srv
     restart: unless-stopped
@@ -63,7 +61,7 @@ services:
     image: traefik:v3.0.0-beta3
     container_name: olympus-trafik
     extra_hosts:
-      - "signoz:{{ fort_subnet | ansible.utils.ipmath(1)}}"
+      - "signoz:{{ olympus_ip_address }}"
     command:
       - --entrypoints.web.address=:80
       - --providers.docker
@@ -79,7 +77,7 @@ services:
     ports:
       - "80:80"
       # Only local subnet is able to access the traefik console !!
-      - "{{ fort_subnet | ansible.utils.ipmath(1)}}:8080:8080"
+      - "{{ olympus_ip_address }}:8080:8080"
     restart: unless-stopped
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
