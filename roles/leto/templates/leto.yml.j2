@@ -1,3 +1,7 @@
 
 stream:
   host: {{ olympus_stream_server }}
+
+{% if use_egrabber %}
+restart-on-reboot: true
+{% endif %}
