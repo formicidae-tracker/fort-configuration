@@ -1,0 +1,3 @@
+FROM bluenviron/mediamtx:latest-ffmpeg
+
+COPY generate_thumbnail.sh mediamtx.yml /

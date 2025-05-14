@@ -35,7 +35,8 @@ services:
       - traefik.http.services.olympus.loadbalancer.server.port=3000
 
   rtmp:
-    image: ghcr.io/formicidae-tracker/olympus-rtmp:{{ olympus_version }}
+    build:
+      dockerfile: ./Dockerfile.rtmp
     container_name: olympus-rtmp
     ports:
       # it is primordial that this RTMP port stay private to allow

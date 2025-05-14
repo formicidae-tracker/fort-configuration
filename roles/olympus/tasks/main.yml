@@ -5,6 +5,17 @@
     state: directory
     mode: 0755
 
+- name: installs source files
+  copy:
+    src: "{{ item }}"
+    dest: "/usr/local/src/olympus/{{ item }}"
+  with_items:
+    - mediamtx.yml
+    - Dockerfile.rtmp
+  notify:
+    - rebuild olympus
+    - restart olympus
+
 - name: installs templated configuration file
   template:
     src: "{{ item }}.j2"
@@ -12,6 +23,15 @@
     mode: 0644
   with_items:
     - docker-compose.yml
+    - generate_thumbnail.sh
+  notify:
+    - rebuild olympus
+    - restart olympus
+
+- name: ensures script is executable
+  file:
+    path: /usr/local/src/olympus/generate_thumbnail.sh
+    mode: 0755
   notify:
     - rebuild olympus
     - restart olympus

@@ -1,0 +1,8 @@
+---
+
+- name: update-grub
+  shell: update-grub
+  notify: reboots system
+
+- name: reboots system
+  reboot:
