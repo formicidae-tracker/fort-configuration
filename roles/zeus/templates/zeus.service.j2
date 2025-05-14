@@ -2,7 +2,7 @@
 Description=FORT climate control service
 Require={% for key,value in slcan_interfaces.items() %}slcand@{{key}}.service {% endfor %}
 
-After=syslog.target network-online.target {% for key,value in slcan_interfaces.items() %}slcand@{{key}}.service {% endfor %}
+After=syslog.target network-online.target {% for key,value in slcan_interfaces.items() %}slcand@{{key}}.service {% endfor %} avahi-daemon.service
 
 
 [Service]

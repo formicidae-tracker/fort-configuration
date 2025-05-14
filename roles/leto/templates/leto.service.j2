@@ -1,6 +1,6 @@
 [Unit]
 Description=Leto: manages Artemis
-After=syslog.target network-online.target
+After=syslog.target network-online.target avahi-daemon.service gnome-session.target
 
 [Service]
 RestartSec=2s
