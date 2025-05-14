@@ -33,10 +33,21 @@
     src: leto.yml.j2
     dest: /etc/default/leto.yml
 
+- name: removes legacy system leto service
+  file:
+    path: /etc/systemd/system/leto.service
+    state: absent
+  register: removed_legacy_service
+
+- name: reloads system systemd
+  systemd:
+    daemon_reload: yes
+  when: removed_legacy_service.changed
+
 - name: installs leto service
   template:
     src: leto.service.j2
-    dest: /etc/systemd/system/leto.service
+    dest: /etc/systemd/user/leto.service
   notify:
     - enable leto service
     - restart leto service

@@ -5,12 +5,16 @@
     state: restarted
 
 - name: enable leto service
+  become_user: fort-user
   systemd:
     name: leto
+    scope: user
     enabled: yes
     daemon_reload: yes
 
 - name: restart leto service
+  become_user: fort-user
   systemd:
     name: leto
+    scope: user
     state: restarted

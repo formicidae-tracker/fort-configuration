@@ -3,15 +3,20 @@ Description=Leto: manages Artemis
 After=syslog.target network-online.target
 
 [Service]
-User=fort-user
-Group=fort-user
 RestartSec=2s
-Environment="DISPLAY=:0"
 Environment=XDG_DATA_HOME={{leto_data_dir}}
+{% if use_mvHyperion %}
+Environment=MV_IMPACT_ACQUIRE_DIR=/opt/mvIMPACT_Acquire
+Environment=MV_IMPACT_ACQUIRE_DATA_DIR=/opt/mvIMPACT_Acquire/data
+{% endif %}
+{%if use_egrabber %}
+Environment=EURESYS_COAXLINK_GENTL64_CTI=/opt/euresys/egrabber/lib/x86_64/coaxlink.cti
+{% endif %}
+
 {% if enable_telemetry == True %}
 Environment=LETO_OTEL_ENDPOINT="{{ olympus_ip_address }}:4317"
 {% endif %}
-Environment=EURESYS_COAXLINK_GENTL64_CTI=/opt/euresys/egrabber/lib/x86_64/coaxlink.cti
+
 WorkingDirectory=/data/fort-user
 ExecStart=/usr/local/bin/leto
 StandardOutput=syslog
@@ -20,4 +25,4 @@ StandardError=syslog
 Restart=always
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=gnome-session.target
