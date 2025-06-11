@@ -18,10 +18,11 @@ Environment=LETO_OTEL_ENDPOINT="{{ olympus_ip_address }}:4317"
 {% endif %}
 
 WorkingDirectory=/data/fort-user
+ExecStartPre=/usr/bin/env
 ExecStart=/usr/local/bin/leto
 StandardOutput=syslog
 StandardError=syslog
-#SyslogIdentifier=leto
+SyslogIdentifier=leto
 Restart=always
 
 [Install]

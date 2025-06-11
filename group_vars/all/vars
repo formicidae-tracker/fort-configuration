@@ -9,7 +9,7 @@ euresys_egrabber_version: 14.0.1.167
 euresys_arch: x86_64
 artemis_version: HEAD
 leto_version: HEAD
-zeus_version: v0.4.0
+zeus_version: v0.4.1
 olympus_version: v0.5
 leto_data_dir: /data/fort-user
 coaxlink_firmware_version: 343
