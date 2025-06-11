@@ -51,6 +51,9 @@
         set -e
         export DISPLAY=:0
         export XDG_RUNTIME_DIR=/run/user/$(id -u fort-user)
+
+        mkdir -p /home/fort-user/.local/share/keyrings/
+
         [ -f ~/.local/share/keyring/RDP.keyring] || cat > ~/.local/share/keyrings/login.keyring <<EOF
         [keyring]
         display-name=RDP
