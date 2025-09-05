@@ -49,18 +49,28 @@
     ./install_mvHYPERION.sh -u
   when: ansible_local['fort-check-hyperion']['hyperion-libraries'] == False
 
+- name: Installs required packages
+  apt:
+    name: dkms
+
 - name: Downloads mvHyperion kernel custom sources
   git:
     repo: https://github.com/formicidae-tracker/mvHyperion
-    dest: /usr/local/src/mvHyperion
+    dest: /usr/src/mvHyperion-2.44.0
     version: main
   register: checked_out
 
-- name: Compiles and install kernel modules
-  shell: |
-    set -x
+- name: Adds module to dkms
+  command: dkms add -m mvHyperion -v 2.44.0
+  args:
+    creates: /var/lib/dkms/mvHyperion/2.44.0/source
 
-    make -C /usr/local/src/mvHyperion all install
+- name: Builds kernel module
+  command: dkms build -m mvHyperion -v 2.44.0
+  when: checked_out.changed or ansible_local['fort-check-hyperion']['hyperion-kernel'] == False
+
+- name: Installs kernel module
+  command: dkms install -m mvHyperion -v 2.44.0
   when: checked_out.changed or ansible_local['fort-check-hyperion']['hyperion-kernel'] == False
 
 - name: disable IOMMU
