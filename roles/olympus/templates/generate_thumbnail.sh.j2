@@ -2,6 +2,9 @@
 
 MTX_PATH=$1
 
+THUMBNAIL_BASEPATH=/srv/thumbnails/$MTX_PATH
+
+trap "rm $THUMBNAIL_BASEPATH.jpg; exit 0" INT
 
 DIR=$(/usr/bin/dirname $1)
 
@@ -9,6 +12,8 @@ mkdir -p /srv/thumbnails/$DIR
 
 while true
 do
-	ffmpeg -y -i rtmp://{{ olympus_ip_address }}/$MTX_PATH -frames:v 1 -update 1 /srv/thumbnails/$MTX_PATH.jpg 2>/dev/null
+	ffmpeg -y -i rtmp://{{ olympus_ip_address }}/$MTX_PATH -frames:v 1 -update 1 $THUMBNAIL_BASEPATH-new.jpg 2>/dev/null
+	rm $THUMBNAIL_BASEPATH.jpg
+	mv $THUMBNAIL_BASEPATH-new.jpg $THUMBNAIL_BASEPATH.jpg
 	/bin/sleep 600
 done
